@@ -14,6 +14,30 @@ const bcrypt = require('bcrypt');
 
 const router = express.Router(); 
 
+router.post('/signup', (req, res) => {
+    bcrypt.hash(req.body.password, 10)
+        .then((hash) => {
+            client.query('INSERT INTO users (username, email, password) VALUES ($1::text, $2::text, $3::text)',
+                        [req.body.username, req.body.email, hash])
+                .then(() => {
+                    res.sendStatus(200);
+                })
+                .catch((err) => {
+                    console.log(err.stack);
+                    if (err.message.toLowerCase().includes('duplicate')) {
+                        res.status(400).send('Duplicate primary key in User table (email already exists).');
+                    }
+                    else {
+                        res.sendStatus(500);
+                    }
+                });
+        })
+        .catch((err) => {
+            console.log(err.stack);
+            res.sendStatus(500);
+        });
+});
+
 router.post('/login', (req, res) => {
 
     client.query('SELECT id as id, password AS hash FROM users WHERE email = $1::text',
@@ -58,10 +82,6 @@ router.use((req, res, next) => {
     else {
         res.sendStatus(403);
     }
-});
-
-router.post('/test', (req, res) => {
-    res.sendStatus(200);
 });
 
 module.exports = {
