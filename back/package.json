@@ -1,0 +1,11 @@
+{
+    "name": "centenargo",
+    "main": "server.js",
+    "dependencies": {
+        "express": "~4.16.0",
+        "body-parser": "~1.18.2",
+        "pg": "7.4.1",
+        "bcrypt": "1.0.3",
+        "jsonwebtoken": "8.2.0"
+    }
+}
