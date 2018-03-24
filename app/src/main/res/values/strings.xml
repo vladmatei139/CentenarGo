@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">CentenarGo v2</string>
+    <string name="loginLbbEmail">Email:</string>
+    <string name="loginLbPassword">Password:</string>
+    <string name="buttonLoginButton">Login</string>
+    <string name="loginTextNoAccount">No account yet? Create one now!</string>
+    <string name="loginRegisterButton">Register</string>
+    <string name="loginTouristButton">Login as tourist</string>
+    <string name="registerLbUsername">Username:</string>
+    <string name="registerLbEmail">Email:</string>
+    <string name="registerLbPassword">Password</string>
+    <string name="registerLbRepeatPassword">Confirm password:</string>
+    <string name="registerLbFirstName">First name:</string>
+    <string name="registerLbLastName">Last name:</string>
+    <string name="registerRegisterButton">Register</string>
+    <string name="title_activity_routes_">Map</string>
+    <string name="appLogo">Application logo</string>
+</resources>
