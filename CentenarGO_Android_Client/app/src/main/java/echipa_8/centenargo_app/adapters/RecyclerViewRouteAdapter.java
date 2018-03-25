@@ -1,4 +1,4 @@
-package com.example.ioan_emanuelpopescu.centenargov2.adapters;
+package echipa_8.centenargo_core.adapters;
 
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.RecyclerView;
@@ -8,8 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.ioan_emanuelpopescu.centenargov2.R;
-import com.example.ioan_emanuelpopescu.centenargov2.wrappers.Route;
+import echipa_8.centenargo_app.R;
+import echipa_8.centenargo_core.wrappers.Route;
 
 import java.util.ArrayList;
 
