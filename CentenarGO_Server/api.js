@@ -96,44 +96,6 @@ router.use((req, res, next) => {
     }
 });
 
-router.post('/routes', (req, res, next) => {
-    client.query(`SELECT r.id as id, r.name as name, l.latitude as latitude, l.longitude as longitude
-                  FROM routes r
-                  JOIN landmarks l ON l.route = r.id
-                  JOIN userroutes ur ON ur.routeid = r.id
-                  JOIN users u ON ur.userid = u.id
-                  WHERE u.id = $1::uuid
-                  AND l.routeorder = 1`, [req.id])
-        .then((result) => {
-            if (result.rows.length === 0) {
-                res.status(500).send('User has no routes');
-                return;
-            }
-            res.status(200).json({routes: result.rows});
-        })
-        .catch((err) => {
-            console.log(err.stack);
-            res.sendStatus(500);
-        });
-});
-
-router.post('/route/:routeId', (req, res, next) => {
-    client.query(`SELECT name as name, latitude as latitude, longitude as longitude, routeorder as order
-                  FROM landmarks
-                  WHERE route = $1::int`, [req.params.routeId])
-        .then((result) => {
-            if (result.rows.length === 0) {
-                res.status(500).send('Route has no landmarks');
-                return;
-            }
-            res.status(200).json({routes: result.rows});
-        })
-        .catch((error) => {
-            console.log(err.stack);
-            res.sendStatus(500);
-        });
-});
-
 module.exports = {
     config: config,
     client: client,
