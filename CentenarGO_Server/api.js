@@ -50,22 +50,16 @@ router.post('/login', (req, res) => {
                 return;
             }
             hash = result.rows[0].hash;
-            bcrypt.compare(req.body.password, hash)
-                .then((same) => {
-                    res.status(200);
-                    jwt.sign({id: result.rows[0].id}, config.tokenSecret, {expiresIn: 30 * 24 * 60}, (err, token) => {
-                        if (err) {
-                            console.log(err.stack);
-                            res.sendStatus(500);
-                            return;
-                        }
+            bcrypt.compare(req.body.password, hash, (err, same) => {
+					if(same) {
+						res.status(200);
+                        let token = jwt.sign({data: result.rows[0].id}, config.tokenSecret, {expiresIn: 30 * 24 * 60});
                         res.json({token: token});
-                    });
-                })
-                .catch((err) => {
-                    console.log(err.stack);
-                    res.sendStatus(401);
-                });
+					} else {
+						console.log(err);
+                        res.sendStatus(401);
+					}
+				});
         })
         .catch((err) => {
             console.log(err.stack);
