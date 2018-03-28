@@ -97,13 +97,14 @@ router.use((req, res, next) => {
 });
 
 router.post('/routes', (req, res, next) => {
-    client.query(`SELECT r.id as id, r.name as name, l.latitude as latitude, l.longitude as longitude
+    /**
+     * Rutele sunt aceleasi pentru toti userii logati. 
+     * Se intorc numele "name" si coordonatele ("beginLatitude", "beginLongitude") ale primului obiectiv al fiecarei rute care are cel putin un obiectiv.
+     */
+    client.query(`SELECT r.id as id, r.name as name, l.latitude as beginLatitude, l.longitude as beginLongitude
                   FROM routes r
                   JOIN landmarks l ON l.route = r.id
-                  JOIN userroutes ur ON ur.routeid = r.id
-                  JOIN users u ON ur.userid = u.id
-                  WHERE u.id = $1::uuid
-                  AND l.routeorder = 1`, [req.id])
+                  WHERE l.routeorder = 1`)
         .then((result) => {
             if (result.rows.length === 0) {
                 res.status(500).send('User has no routes');
@@ -112,24 +113,75 @@ router.post('/routes', (req, res, next) => {
             res.status(200).json({routes: result.rows});
         })
         .catch((err) => {
-            console.log(err.stack);
+            console.error(err.stack);
             res.sendStatus(500);
         });
 });
 
-router.post('/route/:routeId', (req, res, next) => {
-    client.query(`SELECT name as name, latitude as latitude, longitude as longitude, routeorder as order
-                  FROM landmarks
-                  WHERE route = $1::int`, [req.params.routeId])
-        .then((result) => {
+router.post('/route/:routeId/landmarks', (req, res, next) => {
+    /**
+     * Se extrag obiectivele pentru ruta ceruta.
+     * Daca ruta ceruta nu este cea curenta, se intoarce doar primul obiectiv.
+     * Altfel, se intorc toate obiectivele pana la cel curent inclusiv.
+     */
+    client.query(`(WITH tbl1 AS 
+                   (
+                    SELECT l.id AS id, l.name AS name, l.latitude AS latitude, l.longitude AS longitude, l.routeorder AS routeorder
+                    FROM landmarks l
+                    JOIN routes r ON r.id = l.route
+                    JOIN userdetails ud ON r.id = ud.currentroute
+                    WHERE ud.userid = $1::uuid 
+                    AND r.id = $2::int
+                   )
+                   SELECT id, name, latitude, longitude, routeorder, (routeorder = (SELECT MAX(routeorder) FROM tbl1)) AS is_current
+                   FROM tbl1)
+                  UNION
+                  (SELECT l.id, l.name, l.latitude, l.longitude, l.routeorder, false as is_current 
+                   FROM landmarks l
+                   JOIN routes r ON r.id = l.route
+                   JOIN userdetails ud ON ud.userid = $1::uuid
+                   WHERE r.id = $2::int
+                   AND l.routeorder = 1)
+                  ORDER BY 5 ASC`, [req.id, req.params.routeId])
+        .then(result => {
             if (result.rows.length === 0) {
                 res.status(500).send('Route has no landmarks');
                 return;
             }
-            res.status(200).json({routes: result.rows});
+            res.status(200).json({landmarks: result.rows});
         })
-        .catch((error) => {
-            console.log(err.stack);
+        .catch(err => {
+            console.error(err.stack);
+            res.sendStatus(500);
+        });
+});
+
+router.post('/landmark/:landmarkId', (req, res, next) => {
+    /**
+     * Se intoarce obiectivul cerut din ruta curenta, cu toate datele din tabel.
+     * Daca obiectivul este cel curent, content-ul se trunchiaza la 100 de caractere.
+     */
+    client.query(`SELECT l.id, l.name, l.content, l.route, l.latitude, l.longitude, l.routeorder, LEAST(1, COALESCE(ur.currentlandmark, 0)) as is_current
+                  FROM landmarks l
+                  JOIN routes r ON r.id = l.route
+                  JOIN userdetails ud ON ud.currentroute = r.id 
+                  LEFT JOIN userroutes ur ON ur.currentlandmark = l.id
+                  WHERE ud.userid = $1::uuid 
+                  AND l.id = $2::int`, [req.id, req.params.landmarkId])
+        .then(result => {
+            if (result.rows.length === 0) {
+                res.status(500).send('Landmark does not exist or is not part of the current route.');
+                return;
+            }
+            landmark = result.rows[0];
+            landmark.is_current = landmark.is_current > 0;
+            if (landmark.is_current) {
+                landmark.content = landmark.content.substr(0, Math.min(landmark.content.length, 100));
+            }
+            res.status(200).json({landmark: landmark});
+        })
+        .catch(err => {
+            console.error(err.stack);
             res.sendStatus(500);
         });
 });
