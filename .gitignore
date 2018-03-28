@@ -1,9 +1,10 @@
 *.iml
 .gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
+/CentenarGO_Android_Client/local.properties
+/CentenarGO_Android_Client/.idea/workspace.xml
+/CentenarGO_Android_Client/.idea/libraries
 .DS_Store
-/build
-/captures
-.externalNativeBuild
+/CentenarGO_Android_Client/build
+/CentenarGO_Android_Client/captures
+/CentenarGO_Android_Client/.externalNativeBuild
+/CentenarGO_Server/node_modules
