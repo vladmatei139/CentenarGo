@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CentenarGo v2</string>
+    <string name="app_name">CentenarGo</string>
     <string name="loginLbbEmail">Email:</string>
     <string name="loginLbPassword">Password:</string>
     <string name="buttonLoginButton">Login</string>
@@ -15,4 +15,5 @@
     <string name="registerRegisterButton">Register</string>
     <string name="title_activity_routes_">Map</string>
     <string name="appLogo">Application logo</string>
+    <string name="google_maps_key">AIzaSyAWgy6csCZkx6pc21ACAl4ipzp13ISM4F0</string>
 </resources>

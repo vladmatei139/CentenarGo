@@ -1,4 +1,4 @@
-package echipa_8.centenargo_core.adapters;
+package echipa_8.centenargo_app.adapters;
 
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.RecyclerView;
@@ -19,10 +19,10 @@ import java.util.ArrayList;
 
 public class RecyclerViewRouteAdapter extends RecyclerView.Adapter<RecyclerViewRouteAdapter.RecyclerViewRouteHolder> {
 
-    private ArrayList<Route> routes = new ArrayList<>();
+    private String[] mDataset;
 
-    public RecyclerViewRouteAdapter(ArrayList<Route> routes) {
-        this.routes = routes;
+    public RecyclerViewRouteAdapter(String[] myDataset) {
+        mDataset = myDataset;
     }
 
     @Override
@@ -33,48 +33,20 @@ public class RecyclerViewRouteAdapter extends RecyclerView.Adapter<RecyclerViewR
 
     @Override
     public void onBindViewHolder(RecyclerViewRouteHolder holder, int position) {
-        Route route = routes.get(position);
-        if(route == null){
-            return;
-        }
-
-        holder.tvIndex.setText(String.valueOf(route.getUuid()));
-        holder.tvTitle.setText(route.getName());
-        holder.cbIsCompleted.setChecked(route.checkIfCompleted());
-
-
+        holder.mTextView.setText(mDataset[position]);
     }
 
     @Override
     public int getItemCount() {
-        return routes.size();
+        return mDataset.length;
     }
 
     public class RecyclerViewRouteHolder extends RecyclerView.ViewHolder {
-
-        private TextView tvIndex;
-        private TextView tvTitle;
-        private AppCompatCheckBox cbIsCompleted;
+        public TextView mTextView;
 
         public RecyclerViewRouteHolder(View itemView) {
             super(itemView);
-            tvIndex = itemView.findViewById(R.id.tvListItemUID);
-            tvTitle = itemView.findViewById(R.id.tvListItemTitle);
-            cbIsCompleted = itemView.findViewById(R.id.cbListItemCheck);
-
-            itemView.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v) {
-                    // get position
-                    int pos = getAdapterPosition();
-
-                    // check if item still exists
-                    if(pos != RecyclerView.NO_POSITION){
-                        Route clickedDataItem = routes.get(pos);
-                        Log.i("MESSAGE", "You clicked item " + pos + " named " + clickedDataItem.getName());
-                    }
-                }
-            });
+            mTextView = itemView.findViewById(R.id.tvListItemTitle);
 
         }
     }

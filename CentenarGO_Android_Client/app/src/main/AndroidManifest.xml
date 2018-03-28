@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.ioan_emanuelpopescu.centenargov2">
+    package="echipa_8.centenargo_app">
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -8,7 +8,7 @@
          location permissions for the 'MyLocation' functionality. 
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -17,6 +17,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
         <activity android:name=".activities.Login_Activity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,7 +28,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.Register_Activity" />
-        <activity android:name=".activities.Routes_Activity"></activity>
+        <activity android:name=".activities.Routes_Activity" />
+        <activity android:name=".activities.Route_Activity"></activity>
     </application>
 
 </manifest>

@@ -1,9 +1,9 @@
-package com.example.ioan_emanuelpopescu.centenargov2.services;
+package echipa_8.centenargo_app.services;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.ioan_emanuelpopescu.centenargov2.activities.Register_Activity;
+import echipa_8.centenargo_app.activities.Register_Activity;
 
 import org.json.JSONException;
 import org.json.JSONObject;

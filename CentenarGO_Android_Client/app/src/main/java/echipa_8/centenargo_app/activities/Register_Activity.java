@@ -1,4 +1,4 @@
-package com.example.ioan_emanuelpopescu.centenargov2.activities;
+package echipa_8.centenargo_app.activities;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -7,8 +7,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.ioan_emanuelpopescu.centenargov2.R;
-import com.example.ioan_emanuelpopescu.centenargov2.services.Register_Service;
+import echipa_8.centenargo_app.R;
+import echipa_8.centenargo_app.services.Register_Service;
 
 public class Register_Activity extends AppCompatActivity {
 

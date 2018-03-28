@@ -1,4 +1,4 @@
-package com.example.ioan_emanuelpopescu.centenargov2;
+package echipa_8.centenargo_app;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.example.ioan_emanuelpopescu.centenargov2", appContext.getPackageName());
+        assertEquals("echipa_8", appContext.getPackageName());
     }
 }

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.ioan_emanuelpopescu.centenargov2.activities.Register_Activity"
+    tools:context="echipa_8.centenargo_app.activities.Register_Activity"
     android:orientation="vertical"
     android:gravity="center_vertical"
     android:paddingLeft="30dp"

@@ -1,24 +1,35 @@
-package com.example.ioan_emanuelpopescu.centenargov2.services;
+package echipa_8.centenargo_app.services;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.ioan_emanuelpopescu.centenargov2.activities.Login_Activity;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import echipa_8.centenargo_app.activities.Login_Activity;
+import echipa_8.centenargo_app.activities.Routes_Activity;
 
 /**
  * Created by Ioan-Emanuel Popescu on 24-Mar-18.
  */
 
 //  Params, Progress, Result
-public class Login_Service extends AsyncTask<String,String, Object> {
+public class Login_Service extends AsyncTask<String, String, Object> {
+
+    private WeakReference<Login_Activity> login_activity;
+    private static String token = null;
+
+    public Login_Service(final Login_Activity login_activity) {
+        this.login_activity = new WeakReference<>(login_activity);
+    }
 
     @Override
     protected Object doInBackground(String... strings) {
@@ -43,19 +54,29 @@ public class Login_Service extends AsyncTask<String,String, Object> {
 
             Integer replyCode = httpURLConnection.getResponseCode();
             String replyMessage = httpURLConnection.getResponseMessage();
-            JSONObject replyJSON = new JSONObject();
+
+
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(httpURLConnection.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+            JSONObject replyJSON = new JSONObject(response.toString());
+
 
             if(replyCode == 200){
-                replyJSON = new JSONObject(replyMessage);
-                Log.i("STATUS", String.valueOf(httpURLConnection.getResponseCode()));
-                Log.i("MESSAGE", httpURLConnection.getResponseMessage());
-
+                Log.i("STATUS", replyCode.toString());
+                Log.i("MESSAGE", replyMessage);
+                token = replyJSON.getString("token");
             } else {
                 Log.w("ERROR", "Error code " + replyCode + ": " + replyMessage);
                 return null;
             }
 
-            return httpURLConnection.getResponseMessage();
+            return replyMessage;
 
         } catch (IOException | JSONException e) {
             e.printStackTrace();
@@ -66,12 +87,6 @@ public class Login_Service extends AsyncTask<String,String, Object> {
     @Override
     protected void onPostExecute(Object o) {
         super.onPostExecute(o);
-        if(o == null){
-            Login_Activity.setResponse(null);
-        } else {
-            Login_Activity.setResponse(o.toString());
-        }
+        this.login_activity.get().loginComplete(null == o ? null : o.toString());
     }
-
-
 }

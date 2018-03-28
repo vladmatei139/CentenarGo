@@ -1,4 +1,4 @@
-package com.example.ioan_emanuelpopescu.centenargov2.wrappers;
+package echipa_8.centenargo_core.wrappers;
 
 /**
  * Created by Ioan-Emanuel Popescu on 24-Mar-18.

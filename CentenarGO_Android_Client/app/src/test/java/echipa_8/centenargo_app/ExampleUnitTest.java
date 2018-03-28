@@ -1,4 +1,4 @@
-package com.example.ioan_emanuelpopescu.centenargov2;
+package echipa_8.centenargo_app;
 
 import org.junit.Test;
 

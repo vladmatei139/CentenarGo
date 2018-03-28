@@ -1,4 +1,4 @@
-package com.example.ioan_emanuelpopescu.centenargov2.wrappers;
+package echipa_8.centenargo_core.wrappers;
 
 import java.util.ArrayList;
 import java.util.Random;
