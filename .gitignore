@@ -8,3 +8,4 @@
 /CentenarGO_Android_Client/captures
 /CentenarGO_Android_Client/.externalNativeBuild
 /CentenarGO_Server/node_modules
+/CentenarGO_Server/config.js
