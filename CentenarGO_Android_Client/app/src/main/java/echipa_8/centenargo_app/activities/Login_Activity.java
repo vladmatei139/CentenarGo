@@ -17,7 +17,7 @@ public class Login_Activity extends AppCompatActivity {
     public static final Pattern emailAddressPattern = Pattern.compile("[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" + "\\@"
             + "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" + "(" + "\\." + "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" + ")+");
 
-
+    private static String token = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,10 +54,15 @@ public class Login_Activity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 
+    public void setToken(String t){
+        token = t;
+    }
+
     public void loginComplete(String response){
         if(null != response){
             toast("SUCCESS");
             Intent intent = new Intent(getApplicationContext(), Routes_Activity.class);
+            intent.putExtra("TOKEN", token);
             startActivity(intent);
         } else {
             toast("FAIL");

@@ -1,5 +1,6 @@
 package echipa_8.centenargo_app.activities;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,16 +19,15 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import echipa_8.centenargo_app.R;
 import echipa_8.centenargo_app.adapters.RecyclerViewRouteAdapter;
+import echipa_8.centenargo_app.services.Routes_Service;
 import echipa_8.centenargo_app.utilities.MapUtility;
 
 public class Routes_Activity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final float CITY_ZOOM = 11f;
     private static final LatLng ZERO_KM_BUCHAREST = new LatLng(44.4327025, 26.104049400000008);
-    private static final LatLng START_ROUTE1 = new LatLng(44.4531131, 26.084638199999972);
-    private static final LatLng START_ROUTE2 = new LatLng(44.4275035, 26.087350600000036);
-    private static final LatLng START_ROUTE3 = new LatLng(44.41126999999999, 26.09687889999998);
 
+    private String[] dataset;
 
     private GoogleMap mMap;
 
@@ -40,26 +40,31 @@ public class Routes_Activity extends AppCompatActivity implements OnMapReadyCall
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+        String token = intent.getStringExtra("TOKEN");
         setContentView(R.layout.activity_routes_);
 
         mActionBarToolbar = findViewById(R.id.toolbar_routes);
         mActionBarToolbar.setTitle(R.string.app_name);
         setSupportActionBar(mActionBarToolbar);
 
-        mRoutesView = findViewById(R.id.recyclerView_routes);
+        Routes_Service routes_service = new Routes_Service(this);
+        routes_service.execute(token);
+    }
 
-        //mLandmarksView.setHasFixedSize(true);
+    public void setRoutes(String response) {
+
+        dataset = response.split("\\r?\\n");
+        String[] names = getNamesFromDataset(dataset);
+        mRoutesView = findViewById(R.id.recyclerView_routes);
         mRoutesLayoutManager = new LinearLayoutManager(this);
         mRoutesView.setLayoutManager(mRoutesLayoutManager);
-
-        String[] dataset = new String[]{"LM1", "LM2", "LM3"};
-        mRoutesAdapter = new RecyclerViewRouteAdapter(dataset);
+        mRoutesAdapter = new RecyclerViewRouteAdapter(names);
         mRoutesView.setAdapter(mRoutesAdapter);
 
         if (MapUtility.getLocationPermission(this))
-           initMap();
+            initMap();
     }
-
 
     private void initMap() {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_routes);
@@ -78,22 +83,23 @@ public class Routes_Activity extends AppCompatActivity implements OnMapReadyCall
     }
 
     private void setMarkersStartingRoutes() {
+        for (int i = 0; i < dataset.length; i++) {
+            String[] route = dataset[i].split(",");
+            LatLng latLng = new LatLng(Double.parseDouble(route[1]), Double.parseDouble(route[2]));
+            mMap.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                    .title(route[0])
+                    .snippet(MapUtility.geoLocateByLatLng(this, latLng)));
+        }
+    }
 
-        mMap.addMarker(new MarkerOptions()
-                .position(START_ROUTE1)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                .title("Muzeul Antipa")
-                .snippet(MapUtility.geoLocateByLatLng(this,START_ROUTE1)));
-        mMap.addMarker(new MarkerOptions()
-                .position(START_ROUTE2)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
-                .title("Palatul Parlamentului")
-                .snippet(MapUtility.geoLocateByLatLng(this,START_ROUTE2)));
-        mMap.addMarker(new MarkerOptions()
-                .position(START_ROUTE3)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                .title("Memorialul Eroilor Neamului")
-                .snippet(MapUtility.geoLocateByLatLng(this, START_ROUTE3)));
+    private String[] getNamesFromDataset(String[] dataset) {
+        String[] names = new String[dataset.length];
+        for (int i = 0; i < dataset.length; i++) {
+            names[i] = dataset[i].split(",")[0];
+        }
+        return names;
     }
 
     @Override
@@ -101,4 +107,5 @@ public class Routes_Activity extends AppCompatActivity implements OnMapReadyCall
         if (MapUtility.requestPermission(requestCode, permissions, grantResults))
             initMap();
     }
+
 }
