@@ -25,11 +25,16 @@ public class Register_Activity extends AppCompatActivity {
         TextView tvUsername = findViewById(R.id.registerInputUsername);
         TextView tvPassword = findViewById(R.id.registerInputPassword);
         TextView tvRepeatPassword = findViewById(R.id.registerInputRepeatPassword);
+        TextView tvFirstName = findViewById(R.id.registerInputFirstName);
+        TextView tvLastName = findViewById(R.id.registerInputLastName);
 
         String email = tvEmail.getText().toString().trim();
         String username = tvUsername.getText().toString().trim();
         String password = tvPassword.getText().toString().trim();
         String repeatPass = tvRepeatPassword.getText().toString().trim();
+        String firstName = tvFirstName.getText().toString().trim();
+        String lastName = tvLastName.getText().toString().trim();
+
 
         if(!password.equals(repeatPass)){
             toast("Passwords don't match");
@@ -37,7 +42,7 @@ public class Register_Activity extends AppCompatActivity {
         }
 
         Register_Service register_service = new Register_Service();
-        register_service.execute(email, username, password);
+        register_service.execute(email, username, password, firstName, lastName);
 
         if(null != getResponse()) {
             toast("SUCCESS");

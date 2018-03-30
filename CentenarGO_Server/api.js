@@ -20,9 +20,13 @@ const errorCatcher = fn => (req, res, next) => {
 
 router.post('/signup', errorCatcher(async (req, res) => {
     hash = await bcrypt.hash(req.body.password, 10);
-    await client.query(`INSERT INTO users (username, email, password) 
-                        VALUES ($1::text, $2::text, $3::text)`, 
+    const result = await client.query(`INSERT INTO users (username, email, password) 
+                        VALUES ($1::text, $2::text, $3::text)
+						RETURNING id`, 
                         [req.body.username, req.body.email, hash]);
+	await client.query(`INSERT INTO userdetails (lastname, firstname, userid) 
+                        VALUES ($1::text, $2::text, $3::uuid)`, 
+                        [req.body.lastname, req.body.firstname, result.rows[0].id]);
     res.sendStatus(200);
 }));
 
@@ -82,40 +86,16 @@ router.post('/routes', errorCatcher(async (req, res, next) => {
     res.status(200).json({routes: rows});
 }));
 
-router.post('/route/:routeId/', errorCatcher(async (req, res, next) => {
+router.post('/route/:routeId', errorCatcher(async (req, res, next) => {
     /**
      * Se extrag obiectivele pentru ruta ceruta.
      * Daca ruta ceruta nu este cea curenta, se intoarce doar primul obiectiv.
      * Altfel, se intorc toate obiectivele pana la cel curent inclusiv.
      */
-    const { rows } = await client.query(`(WITH tbl1 AS (
-                                            SELECT l.id AS id, l.name AS name, l.latitude AS latitude, l.longitude AS longitude, l.routeorder AS routeorder
-                                            FROM landmarks l
-                                            JOIN routes r ON r.id = l.route
-                                            JOIN userdetails ud ON r.id = ud.currentroute
-                                            WHERE ud.userid = $1::uuid 
-                                            AND r.id = $2::int
-                                            AND l.routeorder <= (
-                                                SELECT routeorder
-                                                FROM landmarks
-                                                JOIN userroutes ON landmarks.id = userroutes.currentlandmark 
-                                                WHERE userid = $1::uuid
-                                                AND routeid = $2::int
-                                            )
-                                          )
-                                          SELECT id, name, latitude, longitude, routeorder, (routeorder = (SELECT MAX(routeorder) FROM tbl1)) AS is_current
-                                          FROM tbl1
-                                         )
-                                         UNION (
-                                          SELECT l.id, l.name, l.latitude, l.longitude, l.routeorder, false as is_current 
+    const { rows } = await client.query(`SELECT l.id, l.name, l.latitude, l.longitude, l.routeorder as routerorder
                                           FROM landmarks l
-                                          JOIN routes r ON r.id = l.route
-                                          JOIN userdetails ud ON r.id <> ud.currentroute
-                                          WHERE ud.userid = $1::uuid 
-                                          AND r.id = $2::int
-                                          AND l.routeorder = 1
-                                         )
-                                         ORDER BY 5 ASC`, [req.id, req.params.routeId]);
+                                          WHERE l.route = $1::int
+										  ORDER BY routeorder`, [req.params.routeId]);
     if (rows.length === 0) {
         res.status(500).send('Route has no landmarks or does not exist.');
         return;

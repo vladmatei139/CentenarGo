@@ -1,5 +1,7 @@
 package echipa_8.centenargo_app.adapters;
 
+import android.content.Context;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,10 +15,10 @@ import echipa_8.centenargo_app.R;
 
 public class RecycleViewLandmarkAdapter extends RecyclerView.Adapter<RecycleViewLandmarkAdapter.LandmarkViewHolder> {
 
-    private String[] mDataset;
+    private Pair<String[], int[]> mIdentifiers;
 
-    public RecycleViewLandmarkAdapter(String[] myDataset) {
-        mDataset = myDataset;
+    public RecycleViewLandmarkAdapter(Context context, Pair<String[], int[]> identifiers) {
+        mIdentifiers = identifiers;
     }
 
     public static class LandmarkViewHolder extends RecyclerView.ViewHolder {
@@ -24,7 +26,7 @@ public class RecycleViewLandmarkAdapter extends RecyclerView.Adapter<RecycleView
         public TextView mTextView;
         public LandmarkViewHolder(View view) {
             super(view);
-            mTextView = view.findViewById(R.id.tvListItemTitle);
+            mTextView = view.findViewById(R.id.list_item_template_title);
         }
     }
 
@@ -37,11 +39,11 @@ public class RecycleViewLandmarkAdapter extends RecyclerView.Adapter<RecycleView
 
     @Override
     public void onBindViewHolder(RecycleViewLandmarkAdapter.LandmarkViewHolder holder, int position) {
-        holder.mTextView.setText(mDataset[position]);
+        holder.mTextView.setText(mIdentifiers.first[position]);
     }
 
     @Override
     public int getItemCount() {
-        return mDataset.length;
+        return mIdentifiers.first.length;
     }
 }

@@ -66,10 +66,11 @@ public class Routes_Service extends AsyncTask<String, String, Object> {
             for (int n = 0; n < replyJSON.length(); n++)
             {
                 JSONObject innerJObject = replyJSON.getJSONObject(n);
+                String id = innerJObject.getString("id");
                 String name = innerJObject.getString("name");
                 String beginLatitude = innerJObject.getString("beginlatitude");
                 String beginLongitude = innerJObject.getString("beginlongitude");
-                sb.append(name + "," + beginLatitude + "," + beginLongitude + '\n');
+                sb.append(id + "," + name + "," + beginLatitude + "," + beginLongitude + '\n');
             }
 
             String routes = sb.toString();

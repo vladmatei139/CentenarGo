@@ -3,6 +3,7 @@ package echipa_8.centenargo_app.services;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -13,38 +14,39 @@ import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 
-import echipa_8.centenargo_app.activities.Login_Activity;
+import echipa_8.centenargo_app.activities.Route_Activity;
+import echipa_8.centenargo_app.activities.Routes_Activity;
 
 /**
- * Created by Ioan-Emanuel Popescu on 24-Mar-18.
+ * Created by sando on 3/30/2018.
  */
 
-//  Params, Progress, Result
-public class Login_Service extends AsyncTask<String, String, Object> {
+public class Route_Service extends AsyncTask<String, String, Object> {
 
-    private WeakReference<Login_Activity> login_activity;
-    private static String token = null;
+    private WeakReference<Route_Activity> route_activity;
 
-    public Login_Service(final Login_Activity login_activity) {
-        this.login_activity = new WeakReference<>(login_activity);
+    public Route_Service(final Route_Activity route_activity) {
+            this.route_activity = new WeakReference<>(route_activity);
     }
 
     @Override
     protected Object doInBackground(String... strings) {
         try {
-            URL url = new URL("http://10.0.2.2:8080/api/login");
+            URL url = new URL("http://10.0.2.2:8080/api/route" + "/" + strings[1]);
 
             HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
-            httpURLConnection.setDoOutput(true);
             httpURLConnection.setRequestMethod("POST");
+            httpURLConnection.setDoOutput(true);
             httpURLConnection.setRequestProperty("Content-Type", "application/json");
             httpURLConnection.setRequestProperty("Accept", "application/json");
             httpURLConnection.connect();
 
+
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("email", strings[0]);
-            jsonObject.put("password", strings[1]);
+            jsonObject.put("token", strings[0]);
+            jsonObject.put("routeId", strings[1]);
 
             DataOutputStream dos = new DataOutputStream(httpURLConnection.getOutputStream());
             dos.writeBytes(jsonObject.toString());
@@ -54,28 +56,38 @@ public class Login_Service extends AsyncTask<String, String, Object> {
             Integer replyCode = httpURLConnection.getResponseCode();
             String replyMessage = httpURLConnection.getResponseMessage();
 
-
             BufferedReader in = new BufferedReader(
-                    new InputStreamReader(httpURLConnection.getInputStream()));
+            new InputStreamReader(httpURLConnection.getInputStream()));
             String inputLine;
             StringBuffer response = new StringBuffer();
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
             in.close();
-            JSONObject replyJSON = new JSONObject(response.toString());
 
+            JSONArray replyJSON = new JSONObject(response.toString()).getJSONArray("landmarks");
 
-            if(replyCode == 200){
+            StringBuilder sb = new StringBuilder();
+            for (int n = 0; n < replyJSON.length(); n++)
+            {
+                JSONObject innerJObject = replyJSON.getJSONObject(n);
+                String id = innerJObject.getString("id");
+                String name = innerJObject.getString("name");
+                String latitude = innerJObject.getString("latitude");
+                String longitude = innerJObject.getString("longitude");
+                sb.append(id + "," + name + "," + latitude + "," + longitude + '\n');
+            }
+
+            String routes = sb.toString();
+            if (replyCode == 200) {
                 Log.i("STATUS", replyCode.toString());
                 Log.i("MESSAGE", replyMessage);
-                token = replyJSON.getString("token");
             } else {
                 Log.w("ERROR", "Error code " + replyCode + ": " + replyMessage);
                 return null;
             }
 
-            return replyMessage;
+            return routes;
 
         } catch (IOException | JSONException e) {
             e.printStackTrace();
@@ -86,7 +98,6 @@ public class Login_Service extends AsyncTask<String, String, Object> {
     @Override
     protected void onPostExecute(Object o) {
         super.onPostExecute(o);
-        this.login_activity.get().setToken(token);
-        this.login_activity.get().loginComplete(null == o ? null : o.toString());
+        this.route_activity.get().setLandmarks(null == o ? null : o.toString());
     }
 }

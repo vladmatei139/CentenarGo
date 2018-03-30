@@ -64,6 +64,7 @@ public class Login_Activity extends AppCompatActivity {
             Intent intent = new Intent(getApplicationContext(), Routes_Activity.class);
             intent.putExtra("TOKEN", token);
             startActivity(intent);
+            finish();
         } else {
             toast("FAIL");
         }

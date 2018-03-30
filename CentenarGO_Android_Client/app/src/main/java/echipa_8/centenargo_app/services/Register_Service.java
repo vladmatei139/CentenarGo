@@ -34,6 +34,8 @@ public class Register_Service extends AsyncTask<String, String, Object> {
             jsonObject.put("email", strings[0]);
             jsonObject.put("username", strings[1]);
             jsonObject.put("password", strings[2]);
+            jsonObject.put("firstname", strings[3]);
+            jsonObject.put("lastname", strings[4]);
 
 
             DataOutputStream dos = new DataOutputStream(httpURLConnection.getOutputStream());
