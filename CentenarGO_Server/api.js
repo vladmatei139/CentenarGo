@@ -6,9 +6,10 @@ const client = new Client({
     password: config.postgresPassword,
     host: config.postgresHost,
     database: config.postgresDatabase,
-    port: config.postgresPort
+    port: config.postgresPort,
+    ssl: true
 });
-client.connect();
+client.connect().catch(err => {console.error(err.stack);});
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
