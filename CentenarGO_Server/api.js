@@ -159,6 +159,40 @@ router.post('/route/change/:routeId', errorCatcher(async (req, res, next) => {
     res.sendStatus(200);
 }));
 
+router.post('/landmark/:landmarkId/questions', errorCatcher(async (req, res, next) => {
+    const { rows } = await client.query(`SELECT q.id AS question_id, q.text as question, a.id as answer_id, a.text as answer
+                                         FROM questions q
+                                         JOIN answers a ON a.questionid = q.id
+                                         WHERE q.landmarkid = $1::int`, [req.params.landmarkId]);
+    if (rows.length === 0) {
+        res.status(500).send('Landmark has no questions.');
+        return;
+    }
+    questions = {};
+    for (let i = 0; i < rows.length; i++) {
+        qid = rows[i].question_id;
+        if (!questions[qid]) {
+            questions[qid] = {'question': rows[i].question};
+            questions[qid]['answers'] = [];
+        }
+        questions[qid]['answers'].push({'id': rows[i].answer_id, 'answer': rows[i].answer});
+    }
+    res.status(200).json(questions);
+}));
+
+router.post('/validate-answers', errorCatcher(async (req, res, next) => {
+    /**
+     * Primeste lista de id-uri de raspunsuri, returneaza daca sunt toate corecte sau nu.
+     * Fiecare raspuns ii este asociat unei unice intrebari, deci nu este nevoie de alte informatii.
+     * Exemplu JSON primit: { "token": "...", "answers": [112, 22, 35]}
+     * JSON inapoiat: { "correct": true/false }, cod 200 chiar si in cazul raspunsurilor gresite (request-ul este corect, raspunsurile nu sunt)
+     */ 
+    const { rows } = await client.query(`SELECT iscorrect as correct
+                                         FROM answers a
+                                         WHERE id = ANY($1::int[])`, [req.body.answers]);
+    res.status(200).json({'correct': rows.reduce((sofar, anon) => sofar && anon.correct)})
+}));
+
 router.use((err, req, res, next) => {
     console.error(err);
     client.query('ROLLBACK')
