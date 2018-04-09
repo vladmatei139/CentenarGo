@@ -168,7 +168,7 @@ router.post('/landmark/:landmarkId/questions', errorCatcher(async (req, res, nex
         res.status(500).send('Landmark has no questions.');
         return;
     }
-    questions = [];
+    questions = {};
     for (let i = 0; i < rows.length; i++) {
         qid = rows[i].question_id;
         if (!questions[qid]) {

@@ -23,13 +23,13 @@
         <activity android:name=".activities.Login_Activity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".activities.Register_Activity" />
         <activity android:name=".activities.Routes_Activity" />
-        <activity android:name=".activities.Route_Activity"></activity>
+        <activity android:name=".activities.Route_Activity" />
+        <activity android:name=".activities.Questions_Activity" />
     </application>
 
 </manifest>

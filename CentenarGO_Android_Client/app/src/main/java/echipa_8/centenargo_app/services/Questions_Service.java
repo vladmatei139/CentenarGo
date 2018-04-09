@@ -36,7 +36,7 @@ public class Questions_Service extends AsyncTask<String, String, Object> {
     @Override
     protected Object doInBackground (String... strings) {
         try {
-            URL url = new URL("http://10.0.2.2:8080/api/landmark/" + strings[0] + "/questions/");
+            URL url = new URL("http://192.168.0.21:8080/api/landmark/" + strings[1] + "/questions/");
 
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("POST");
@@ -47,7 +47,6 @@ public class Questions_Service extends AsyncTask<String, String, Object> {
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("token", strings[0]);
-            jsonObject.put("landmarkId", strings[1]);
 
             DataOutputStream dos = new DataOutputStream(httpURLConnection.getOutputStream());
             dos.writeBytes(jsonObject.toString());
@@ -78,7 +77,7 @@ public class Questions_Service extends AsyncTask<String, String, Object> {
                 List<Pair<Integer, String>> answersList = new ArrayList<>();
                 for (int i = 0; i < answers.length(); i++) {
                     JSONObject answer = new JSONObject(answers.get(i).toString());
-                    answersList.add(new Pair<>(Integer.valueOf((String) answer.get("id")), (String) answer.get("answer")));
+                    answersList.add(new Pair<>(Integer.valueOf((Integer) answer.get("id")), (String) answer.get("answer")));
                 }
                 object.put("answers", answersList);
                 result.put(Integer.valueOf(key), object);
