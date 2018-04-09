@@ -8,6 +8,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Pair;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,6 +29,7 @@ import echipa_8.centenargo_app.services.Questions_Service;
 public class Questions_Activity extends AppCompatActivity {
 
     Toolbar mActionBarToolbar;
+    Map<Integer, Map<String, Object>> data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +48,17 @@ public class Questions_Activity extends AppCompatActivity {
     }
 
     public void setQuestions(Map<Integer, Map<String, Object>> response) {
-        
+        data = response;
+        RecyclerView questionsView = findViewById(R.id.recyclerView_questions);
+        LinearLayout question_template = findViewById(R.id.question_template);
+        int i = 0;
+        for (Integer key : data.keySet()) {
+            questionsView.addView(question_template);
+            ViewGroup current_question = (ViewGroup) questionsView.getChildAt(i);
+            ((TextView) current_question.getChildAt(0)).setText((String) data.get(key).get("question"));
+            //TODO add the answers for the current question
+            i++;
+        }
     }
 
 }
