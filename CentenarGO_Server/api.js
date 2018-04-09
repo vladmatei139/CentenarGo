@@ -180,17 +180,23 @@ router.post('/landmark/:landmarkId/questions', errorCatcher(async (req, res, nex
     res.status(200).json(questions);
 }));
 
-router.post('/validate-answers', errorCatcher(async (req, res, next) => {
+router.post('/landmark/:landmarkId/questions/validate-answers', errorCatcher(async (req, res, next) => {
     /**
      * Primeste lista de id-uri de raspunsuri, returneaza daca sunt toate corecte sau nu.
-     * Fiecare raspuns ii este asociat unei unice intrebari, deci nu este nevoie de alte informatii.
      * Exemplu JSON primit: { "token": "...", "answers": [112, 22, 35]}
      * JSON inapoiat: { "correct": true/false }, cod 200 chiar si in cazul raspunsurilor gresite (request-ul este corect, raspunsurile nu sunt)
      */ 
-    const { rows } = await client.query(`SELECT iscorrect as correct
+    const { rows } = await client.query(`SELECT a.id
                                          FROM answers a
-                                         WHERE id = ANY($1::int[])`, [req.body.answers]);
-    res.status(200).json({'correct': rows.reduce((sofar, anon) => sofar && anon.correct)})
+                                         JOIN questions q ON a.questionid = q.id
+                                         JOIN landmarks l ON q.landmarkid = l.id
+                                         WHERE l.id = $1::int
+                                         AND a.iscorrect = true
+                                         EXCEPT
+                                         SELECT id
+                                         FROM answers
+                                         WHERE id = ANY($2::int[])`, [req.params.landmarkId, req.body.answers]);
+    res.status(200).json({'correct': rows.length === 0});
 }));
 
 router.use((err, req, res, next) => {
