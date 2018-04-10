@@ -40,9 +40,9 @@ public class Questions_Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiYTMxOTRiOTYtYzQzMC00M2RlLTkxZGYtOTlmYmNkZWE1OWM0IiwiaWF0IjoxNTIzMzAxOTAyLCJleHAiOjE1MjMzNDUxMDJ9.zJhpp-gY87IDMPTQstLFYaxdhAauZHKSV3aveC3_aNA";//intent.getStringExtra("TOKEN");
+        String token = intent.getStringExtra("TOKEN");
         setContentView(R.layout.activity_questions_);
-        int routeId = intent.getIntExtra("LandmarkId", 1);
+        int routeId = intent.getIntExtra("LandmarkId", 0);
 
         mActionBarToolbar = findViewById(R.id.toolbar_questions);
         mActionBarToolbar.setTitle("CentenarGo");
