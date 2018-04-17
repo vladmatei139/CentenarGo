@@ -15,6 +15,9 @@ const bcrypt = require('bcrypt');
 
 const router = express.Router(); 
 
+const path = require('path')
+const dir = path.join(__dirname, 'public')
+
 const errorCatcher = fn => (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next); 
 };
@@ -131,8 +134,11 @@ router.post('/landmark/:landmarkId', errorCatcher(async (req, res, next) => {
     if (landmark.is_current) {
         landmark.content = landmark.content.substr(0, Math.min(landmark.content.length, 100));
     }
-    res.status(200).json({landmark: landmark});
+    res.status(200).json({landmark: landmark, image: landmark.name + '.jpg'});
 }));
+
+router.use(express.static(dir));
+
 
 router.post('/route/change/:routeId', errorCatcher(async (req, res, next) => {
     /**
