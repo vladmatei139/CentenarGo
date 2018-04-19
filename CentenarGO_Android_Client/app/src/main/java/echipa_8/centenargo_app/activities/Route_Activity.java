@@ -33,21 +33,22 @@ public class Route_Activity extends AppCompatActivity implements OnMapReadyCallb
     private GoogleMap mMap;
 
     Toolbar mActionBarToolbar;
+    private String mToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        String token = intent.getStringExtra("TOKEN");
+        mToken = intent.getStringExtra("TOKEN");
         setContentView(R.layout.activity_route_);
-        int routeId = intent.getIntExtra("RouteId", 0);
+        mRouteId = intent.getIntExtra("RouteId", 0);
 
         mActionBarToolbar = findViewById(R.id.toolbar_route);
         mActionBarToolbar.setTitle(R.string.app_name);
         setSupportActionBar(mActionBarToolbar);
 
         Route_Service route_service = new Route_Service(this);
-        route_service.execute(token, Integer.toString(routeId));
+        route_service.execute(mToken, Integer.toString(mRouteId));
     }
 
     public void setLandmarks(String response) {
@@ -56,7 +57,7 @@ public class Route_Activity extends AppCompatActivity implements OnMapReadyCallb
         RecyclerView landmarksView = findViewById(R.id.recyclerView_landmarks);
         RecyclerView.LayoutManager landmarksLayoutManager = new LinearLayoutManager(this);
         landmarksView.setLayoutManager(landmarksLayoutManager);
-        RecyclerView.Adapter landmarksAdapter = new RecycleViewLandmarkAdapter(this, identifiers);
+        RecyclerView.Adapter landmarksAdapter = new RecycleViewLandmarkAdapter(this, identifiers, mToken);
         landmarksView.setAdapter(landmarksAdapter);
 
         if (MapUtility.getLocationPermission(this))
