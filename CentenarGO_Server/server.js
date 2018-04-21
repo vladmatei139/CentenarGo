@@ -2,6 +2,7 @@ const express    = require('express');
 const app        = express();
 const bodyParser = require('body-parser');
 const morgan  	 = require('morgan');
+const path = require('path')
 morgan(':method :url :status :res[content-length] - :response-time ms')
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -9,6 +10,9 @@ const api = require('./api');
 const config = api.config;
 const client = api.client;
 const bcrypt = api.bcrypt;
+
+const dir = path.join(__dirname, 'public')
+app.use(express.static(dir));
 
 app.use('/api', api.router);
 app.use((req, res) => {
