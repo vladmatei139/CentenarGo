@@ -45,10 +45,10 @@ public class Questions_Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiYTMxOTRiOTYtYzQzMC00M2RlLTkxZGYtOTlmYmNkZWE1OWM0IiwiaWF0IjoxNTI0Mjk3Njc4LCJleHAiOjE1MjQzNDA4Nzh9.cNoW8T8Hvv0NSW39Dsu7iSLaqPUNlLDNruKPhHSC4oo";//intent.getStringExtra("TOKEN");
+        token = intent.getStringExtra("TOKEN");
         setContentView(R.layout.activity_questions_);
-        routeId = intent.getIntExtra("RouteId", 1);
-        landmarkId = intent.getIntExtra("LandmarkId", 1);
+        routeId = intent.getIntExtra("RouteId", 0);
+        landmarkId = intent.getIntExtra("LandmarkId", 0);
 
         mActionBarToolbar = findViewById(R.id.toolbar_questions);
         mActionBarToolbar.setTitle("CentenarGo");
@@ -89,7 +89,7 @@ public class Questions_Activity extends AppCompatActivity {
         List<Integer> answers = new ArrayList<>();
         LinearLayout questions = (LinearLayout) findViewById(R.id.layout_questions);
         for (int i = 0; i < questions.getChildCount(); i++) {
-            RadioGroup answerGroup = (RadioGroup) questions.getChildAt(i);
+            RadioGroup answerGroup = (RadioGroup)((LinearLayout)questions.getChildAt(i)).getChildAt(1);
             boolean found = false;
             for (int j = 0; !found && j < answerGroup.getChildCount(); j++) {
                 RadioButton answerButton = (RadioButton) answerGroup.getChildAt(j);

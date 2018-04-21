@@ -209,7 +209,31 @@ router.post('/landmark/:landmarkId/questions/validate-answers', errorCatcher(asy
                                          SELECT id
                                          FROM answers
                                          WHERE id = ANY($2::int[])`, [req.params.landmarkId, req.body.answers]);
-    res.status(200).json({'correct': rows.length === 0});
+    correct = (rows.length === 0);
+    if (correct) {
+        await client.query(`UPDATE userroutes ur
+                            SET currentlandmark = COALESCE(currentlandmark, (
+                                SELECT l.id
+                                FROM landmarks l
+                                WHERE l.route = ur.routeid
+                                AND l.routeorder = 1 + (
+                                    SELECT routeorder
+                                    FROM landmarks
+                                    WHERE id = ur.currentlandmark))),
+                                datecompleted = 
+                                CASE WHEN (
+                                    SELECT routeorder
+                                    FROM landmarks
+                                    WHERE id = ur.currentlandmark
+                                ) = (
+                                    SELECT MAX(routeorder)
+                                    FROM landmarks l
+                                    WHERE route = ur.routeid
+                                ) THEN now()
+                                ELSE NULL END
+                            WHERE userid = $1::uuid`, [req.id]);
+    }
+    res.status(200).json({'correct': correct});
 }));
 
 router.use((err, req, res, next) => {

@@ -68,8 +68,6 @@ public class Answers_Service extends AsyncTask<String, String, Object> {
             JSONObject json = new JSONObject(response.toString());
             Boolean result = (Boolean) json.get("correct");
 
-            //TODO update currentlandmark for user (new end-point)
-
             return result;
         }
         catch (Exception e) {
