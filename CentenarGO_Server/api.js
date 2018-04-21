@@ -50,7 +50,7 @@ router.post('/login', errorCatcher(async (req, res) => {
     }
     same = await bcrypt.compare(req.body.password, rows[0].hash);
     if (same) {
-        token = await jwt.sign({data: rows[0].id}, config.tokenSecret, {expiresIn: 30 * 24 * 60}); 
+        token = await jwt.sign({id: rows[0].id}, config.tokenSecret, {expiresIn: 30 * 24 * 60}); 
         res.status(200).json({token: token});
         return;
     }
