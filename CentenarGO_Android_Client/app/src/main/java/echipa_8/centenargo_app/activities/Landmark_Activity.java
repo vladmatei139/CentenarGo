@@ -35,7 +35,7 @@ public class Landmark_Activity extends AppCompatActivity {
         landmarkService.execute(token, Integer.toString(mLandmarkId));
 
         linkFields();
-        loadImageFromURL("http://www.cmn.ro/uploads/tur/tur-virtual.jpg");
+
     }
 
     private void linkFields(){
@@ -52,11 +52,18 @@ public class Landmark_Activity extends AppCompatActivity {
         try {
             JSONObject json = new JSONObject(landmarkJSON);
 
-            String title = json.getString("name");
-            String content = json.getString("content");
+            JSONObject infoJSON = new JSONObject(json.getString("landmark"));
+
+            String title = infoJSON.getString("name");
+            String content = infoJSON.getString("content");
+
+            String imgName = json.getString("image");
 
             mLandmarkTitle.setText(title);
             mLandmarkDescription.setText(content);
+
+            loadImageFromURL("http://192.168.1.2:8080/" + imgName);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

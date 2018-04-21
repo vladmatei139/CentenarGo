@@ -16,7 +16,7 @@ const bcrypt = require('bcrypt');
 const router = express.Router(); 
 
 const path = require('path')
-const dir = path.join(__dirname, 'public')
+
 
 const errorCatcher = fn => (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next); 
@@ -50,7 +50,7 @@ router.post('/login', errorCatcher(async (req, res) => {
     }
     same = await bcrypt.compare(req.body.password, rows[0].hash);
     if (same) {
-        token = await jwt.sign({data: rows[0].id}, config.tokenSecret, {expiresIn: 30 * 24 * 60}); 
+        token = await jwt.sign({id: rows[0].id}, config.tokenSecret, {expiresIn: 30 * 24 * 60}); 
         res.status(200).json({token: token});
         return;
     }
@@ -144,7 +144,7 @@ router.post('/landmark/:landmarkId', errorCatcher(async (req, res, next) => {
     res.status(200).json({landmark: landmark, image: landmark.name + '.jpg'});
 }));
 
-router.use(express.static(dir));
+
 
 
 router.post('/route/change/:routeId', errorCatcher(async (req, res, next) => {

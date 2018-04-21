@@ -32,7 +32,7 @@ public class Landmark_Service extends AsyncTask<String, String, Object> {
     @Override
     protected Object doInBackground(String... strings) {
         try {
-            URL url = new URL("http://10.0.2.2:8080/api/landmark" + "/" + strings[1]);
+            URL url = new URL("http://192.168.1.2:8080/api/landmark" + "/" + strings[1]);
 
             HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
             httpURLConnection.setRequestMethod("POST");
@@ -67,13 +67,15 @@ public class Landmark_Service extends AsyncTask<String, String, Object> {
 
             StringBuilder sb = new StringBuilder();
 
-            String id         = replyJSON.getString("id");
-            String name       = replyJSON.getString("name");
-            String content    = replyJSON.getString("content");
-            String latitude   = replyJSON.getString("latitude");
-            String longitude  = replyJSON.getString("longitude");
-            String routeorder = replyJSON.getString("routeorder");
-            String is_current = replyJSON.getString("is_current");
+            JSONObject landmarkJSON = new JSONObject(replyJSON.getString("landmark"));
+
+            String id         = landmarkJSON.getString("id");
+            String name       = landmarkJSON.getString("name");
+            String content    = landmarkJSON.getString("content");
+            String latitude   = landmarkJSON.getString("latitude");
+            String longitude  = landmarkJSON.getString("longitude");
+            String routeorder = landmarkJSON.getString("routeorder");
+            String is_current = landmarkJSON.getString("is_current");
 
             sb.append(id + "," + name + "," + content + "," + latitude + ","
                     + longitude + "," + routeorder + "," + is_current + '\n');
@@ -87,7 +89,7 @@ public class Landmark_Service extends AsyncTask<String, String, Object> {
                 return null;
             }
 
-            return routes;
+            return replyJSON;
 
         } catch (IOException | JSONException e) {
             e.printStackTrace();
