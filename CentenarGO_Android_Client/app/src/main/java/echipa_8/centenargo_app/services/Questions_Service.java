@@ -36,7 +36,7 @@ public class Questions_Service extends AsyncTask<String, String, Object> {
     @Override
     protected Object doInBackground (String... strings) {
         try {
-            URL url = new URL("http://10.0.2.2:8080/api/landmark/" + strings[1] + "/questions/");
+            URL url = new URL("http://192.168.1.2:8080/api/landmark/" + strings[1] + "/questions/");
 
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("POST");
