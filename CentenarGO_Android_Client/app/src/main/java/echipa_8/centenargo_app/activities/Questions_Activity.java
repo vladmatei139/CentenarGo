@@ -40,16 +40,16 @@ public class Questions_Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        String token = intent.getStringExtra("TOKEN");
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiYTMxOTRiOTYtYzQzMC00M2RlLTkxZGYtOTlmYmNkZWE1OWM0IiwiaWF0IjoxNTI0Mjk3Njc4LCJleHAiOjE1MjQzNDA4Nzh9.cNoW8T8Hvv0NSW39Dsu7iSLaqPUNlLDNruKPhHSC4oo";//intent.getStringExtra("TOKEN");
         setContentView(R.layout.activity_questions_);
-        int routeId = intent.getIntExtra("LandmarkId", 0);
+        int landmarkId = intent.getIntExtra("LandmarkId", 1);
 
         mActionBarToolbar = findViewById(R.id.toolbar_questions);
         mActionBarToolbar.setTitle("CentenarGo");
         setSupportActionBar(mActionBarToolbar);
 
         Questions_Service questions_service = new Questions_Service(this);
-        questions_service.execute(token, Integer.toString(routeId));
+        questions_service.execute(token, Integer.toString(landmarkId));
     }
 
     public void setQuestions(Map<Integer, Map<String, Object>> response) {
