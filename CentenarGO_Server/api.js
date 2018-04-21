@@ -15,6 +15,9 @@ const bcrypt = require('bcrypt');
 
 const router = express.Router(); 
 
+const path = require('path')
+const dir = path.join(__dirname, 'public')
+
 const errorCatcher = fn => (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next); 
 };
@@ -131,8 +134,11 @@ router.post('/landmark/:landmarkId', errorCatcher(async (req, res, next) => {
     if (landmark.is_current) {
         landmark.content = landmark.content.substr(0, Math.min(landmark.content.length, 100));
     }
-    res.status(200).json({landmark: landmark});
+    res.status(200).json({landmark: landmark, image: landmark.name + '.jpg'});
 }));
+
+router.use(express.static(dir));
+
 
 router.post('/route/change/:routeId', errorCatcher(async (req, res, next) => {
     /**
@@ -157,6 +163,46 @@ router.post('/route/change/:routeId', errorCatcher(async (req, res, next) => {
                         WHERE userid = $1::uuid`, [req.id, req.params.routeId]);
     await client.query('COMMIT');
     res.sendStatus(200);
+}));
+
+router.post('/landmark/:landmarkId/questions', errorCatcher(async (req, res, next) => {
+    const { rows } = await client.query(`SELECT q.id AS question_id, q.text as question, a.id as answer_id, a.text as answer
+                                         FROM questions q
+                                         JOIN answers a ON a.questionid = q.id
+                                         WHERE q.landmarkid = $1::int`, [req.params.landmarkId]);
+    if (rows.length === 0) {
+        res.status(500).send('Landmark has no questions.');
+        return;
+    }
+    questions = {};
+    for (let i = 0; i < rows.length; i++) {
+        qid = rows[i].question_id;
+        if (!questions[qid]) {
+            questions[qid] = {'question': rows[i].question};
+            questions[qid]['answers'] = [];
+        }
+        questions[qid]['answers'].push({'id': rows[i].answer_id, 'answer': rows[i].answer});
+    }
+    res.status(200).json(questions);
+}));
+
+router.post('/landmark/:landmarkId/questions/validate-answers', errorCatcher(async (req, res, next) => {
+    /**
+     * Primeste lista de id-uri de raspunsuri, returneaza daca sunt toate corecte sau nu.
+     * Exemplu JSON primit: { "token": "...", "answers": [112, 22, 35]}
+     * JSON inapoiat: { "correct": true/false }, cod 200 chiar si in cazul raspunsurilor gresite (request-ul este corect, raspunsurile nu sunt)
+     */ 
+    const { rows } = await client.query(`SELECT a.id
+                                         FROM answers a
+                                         JOIN questions q ON a.questionid = q.id
+                                         JOIN landmarks l ON q.landmarkid = l.id
+                                         WHERE l.id = $1::int
+                                         AND a.iscorrect = true
+                                         EXCEPT
+                                         SELECT id
+                                         FROM answers
+                                         WHERE id = ANY($2::int[])`, [req.params.landmarkId, req.body.answers]);
+    res.status(200).json({'correct': rows.length === 0});
 }));
 
 router.use((err, req, res, next) => {
