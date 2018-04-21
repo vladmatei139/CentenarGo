@@ -23,14 +23,10 @@ public class RecycleViewLandmarkAdapter extends RecyclerView.Adapter<RecycleView
 
     private Pair<String[], int[]> mIdentifiers;
     private WeakReference<Context> mContext;
-    private String mToken;
-    private Integer mRouteId;
 
-    public RecycleViewLandmarkAdapter(Context context, Pair<String[], int[]> identifiers, Integer mRouteId, String token) {
+    public RecycleViewLandmarkAdapter(Context context, Pair<String[], int[]> identifiers) {
         mIdentifiers = identifiers;
         mContext = new WeakReference<>(context);
-        mRouteId = mRouteId;
-        this.mToken = token;
     }
 
     public static class LandmarkViewHolder extends RecyclerView.ViewHolder {
@@ -58,12 +54,9 @@ public class RecycleViewLandmarkAdapter extends RecyclerView.Adapter<RecycleView
             public void onClick(View view) {
                 Intent intent = new Intent(mContext.get().getApplicationContext(), Landmark_Activity.class);
                 intent.putExtra("LandmarkId", mIdentifiers.second[position]);
-                intent.putExtra("RouteId", mRouteId);
-                intent.putExtra("TOKEN", mToken);
                 mContext.get().startActivity(intent);
             }
         });
-
     }
 
     @Override

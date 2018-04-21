@@ -1,6 +1,5 @@
 package echipa_8.centenargo_app.services;
 
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -15,39 +14,37 @@ import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import echipa_8.centenargo_app.activities.Login_Activity;
+import echipa_8.centenargo_app.activities.Routes_Activity;
 import echipa_8.centenargo_app.utilities.SharedPreferencesUtility;
 
-/**
- * Created by Ioan-Emanuel Popescu on 24-Mar-18.
- */
+public class CurrentInfo_Service extends AsyncTask<String, String, Object> {
 
-//  Params, Progress, Result
-public class Login_Service extends AsyncTask<String, String, Object> {
+    private WeakReference<Routes_Activity> routes_activity;
+    private String newRoute;
+    private int currentCompleted;
+    private int newCompleted;
 
-    private WeakReference<Login_Activity> login_activity;
-    private static String token = null;
-
-    public Login_Service(final Login_Activity login_activity) {
-        this.login_activity = new WeakReference<>(login_activity);
+    public CurrentInfo_Service(final Routes_Activity routes_activity) {
+        this.routes_activity = new WeakReference<>(routes_activity);
     }
 
     @Override
     protected Object doInBackground(String... strings) {
         try {
-            URL url = new URL("http://10.0.2.2:8080/api/login");
+            String token = SharedPreferencesUtility.getToken();
+
+            URL url = new URL("http://10.0.2.2:8080/api/getCurrentInfo/" + strings[0]);
 
             HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
-            httpURLConnection.setDoOutput(true);
             httpURLConnection.setRequestMethod("POST");
+            httpURLConnection.setDoOutput(true);
             httpURLConnection.setRequestProperty("Content-Type", "application/json");
             httpURLConnection.setRequestProperty("Accept", "application/json");
             httpURLConnection.connect();
 
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("email", strings[0]);
-            jsonObject.put("password", strings[1]);
-
+            jsonObject.put("token", token);
+            newRoute = strings[0];
             DataOutputStream dos = new DataOutputStream(httpURLConnection.getOutputStream());
             dos.writeBytes(jsonObject.toString());
             dos.flush();
@@ -56,29 +53,34 @@ public class Login_Service extends AsyncTask<String, String, Object> {
             Integer replyCode = httpURLConnection.getResponseCode();
             String replyMessage = httpURLConnection.getResponseMessage();
 
-
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(httpURLConnection.getInputStream()));
             String inputLine;
-            StringBuffer response = new StringBuffer();
-            while ((inputLine = in.readLine()) != null) {
+            StringBuilder response = new StringBuilder();
+            if ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
             in.close();
+
             JSONObject replyJSON = new JSONObject(response.toString());
 
+            StringBuilder sb = new StringBuilder();
 
-            if(replyCode == 200){
+            String currentRoute = replyJSON.getString("currentroute");
+            currentCompleted = replyJSON.getInt("currentCompleted");
+            newCompleted = replyJSON.getInt("newCompleted");
+            sb.append(currentRoute);
+
+            String currentroute = sb.toString();
+            if (replyCode == 200) {
                 Log.i("STATUS", replyCode.toString());
                 Log.i("MESSAGE", replyMessage);
-                token = replyJSON.getString("token");
-                SharedPreferencesUtility.putUserDetails(token, strings[0]);
             } else {
                 Log.w("ERROR", "Error code " + replyCode + ": " + replyMessage);
                 return null;
             }
 
-            return replyMessage;
+            return currentroute;
 
         } catch (IOException | JSONException e) {
             e.printStackTrace();
@@ -89,6 +91,6 @@ public class Login_Service extends AsyncTask<String, String, Object> {
     @Override
     protected void onPostExecute(Object o) {
         super.onPostExecute(o);
-        this.login_activity.get().loginComplete(null == o ? null : o.toString());
+        this.routes_activity.get().setRoute(newRoute, currentCompleted, newCompleted, null != o ? o.toString() : "null");
     }
 }

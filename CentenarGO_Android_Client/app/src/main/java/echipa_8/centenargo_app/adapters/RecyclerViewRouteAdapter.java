@@ -1,25 +1,18 @@
 package echipa_8.centenargo_app.adapters;
 
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.support.v4.util.Pair;
-import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import echipa_8.centenargo_app.R;
-import echipa_8.centenargo_app.activities.Route_Activity;
-import echipa_8.centenargo_core.wrappers.Route;
+import echipa_8.centenargo_app.activities.Routes_Activity;
+import echipa_8.centenargo_app.services.CurrentInfo_Service;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 
 /**
  * Created by Ioan-Emanuel Popescu on 24-Mar-18.
@@ -28,13 +21,11 @@ import java.util.ArrayList;
 public class RecyclerViewRouteAdapter extends RecyclerView.Adapter<RecyclerViewRouteAdapter.RecyclerViewRouteHolder> {
 
     private Pair<String[], int[]> mIdentifiers;
-    private WeakReference<Context> mContext;
-    private String mToken;
+    private WeakReference<Routes_Activity> mActivity;
 
-    public RecyclerViewRouteAdapter(Context context, Pair<String[], int[]> identifiers, String token) {
+    public RecyclerViewRouteAdapter(final Routes_Activity activity, Pair<String[], int[]> identifiers) {
         mIdentifiers = identifiers;
-        mContext = new WeakReference<>(context);
-        mToken = token;
+        mActivity = new WeakReference<>(activity);
     }
 
     @Override
@@ -49,10 +40,8 @@ public class RecyclerViewRouteAdapter extends RecyclerView.Adapter<RecyclerViewR
         holder.mLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext.get().getApplicationContext(), Route_Activity.class);
-                intent.putExtra("RouteId", mIdentifiers.second[position]);
-                intent.putExtra("TOKEN", mToken);
-                mContext.get().startActivity(intent);
+                CurrentInfo_Service currentInfo_service = new CurrentInfo_Service(mActivity.get());
+                currentInfo_service.execute(Integer.toString(mIdentifiers.second[position]));
             }
         });
     }

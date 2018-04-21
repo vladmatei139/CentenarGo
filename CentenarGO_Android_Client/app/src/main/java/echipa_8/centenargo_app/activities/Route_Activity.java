@@ -21,6 +21,7 @@ import echipa_8.centenargo_app.R;
 import echipa_8.centenargo_app.adapters.RecycleViewLandmarkAdapter;
 import echipa_8.centenargo_app.services.Route_Service;
 import echipa_8.centenargo_app.utilities.MapUtility;
+import echipa_8.centenargo_app.utilities.SharedPreferencesUtility;
 
 public class Route_Activity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -28,27 +29,24 @@ public class Route_Activity extends AppCompatActivity implements OnMapReadyCallb
     private static final LatLng ZERO_KM_BUCHAREST = new LatLng(44.4327025, 26.104049400000008);
 
     private String[] dataset;
-    private int mRouteId;
 
     private GoogleMap mMap;
 
     Toolbar mActionBarToolbar;
-    private String mToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        mToken = intent.getStringExtra("TOKEN");
+        String routeId = intent.getStringExtra("routeId");
         setContentView(R.layout.activity_route_);
-        mRouteId = intent.getIntExtra("RouteId", 0);
 
         mActionBarToolbar = findViewById(R.id.toolbar_route);
         mActionBarToolbar.setTitle(R.string.app_name);
         setSupportActionBar(mActionBarToolbar);
 
         Route_Service route_service = new Route_Service(this);
-        route_service.execute(mToken, Integer.toString(mRouteId));
+        route_service.execute(routeId);
     }
 
     public void setLandmarks(String response) {
@@ -57,7 +55,7 @@ public class Route_Activity extends AppCompatActivity implements OnMapReadyCallb
         RecyclerView landmarksView = findViewById(R.id.recyclerView_landmarks);
         RecyclerView.LayoutManager landmarksLayoutManager = new LinearLayoutManager(this);
         landmarksView.setLayoutManager(landmarksLayoutManager);
-        RecyclerView.Adapter landmarksAdapter = new RecycleViewLandmarkAdapter(this, identifiers, mRouteId, mToken);
+        RecyclerView.Adapter landmarksAdapter = new RecycleViewLandmarkAdapter(this, identifiers);
         landmarksView.setAdapter(landmarksAdapter);
 
         if (MapUtility.getLocationPermission(this))

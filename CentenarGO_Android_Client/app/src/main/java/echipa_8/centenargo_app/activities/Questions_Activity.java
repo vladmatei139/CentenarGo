@@ -32,12 +32,12 @@ import java.util.Map;
 import echipa_8.centenargo_app.R;
 import echipa_8.centenargo_app.services.Answers_Service;
 import echipa_8.centenargo_app.services.Questions_Service;
+import echipa_8.centenargo_app.utilities.SharedPreferencesUtility;
 
 public class Questions_Activity extends AppCompatActivity {
 
     Toolbar mActionBarToolbar;
     Map<Integer, Map<String, Object>> data;
-    String token;
     Integer routeId;
     Integer landmarkId;
 
@@ -45,7 +45,7 @@ public class Questions_Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        token = intent.getStringExtra("TOKEN");
+        String token = SharedPreferencesUtility.getToken();
         setContentView(R.layout.activity_questions_);
         routeId = intent.getIntExtra("RouteId", 0);
         landmarkId = intent.getIntExtra("LandmarkId", 0);
@@ -104,14 +104,13 @@ public class Questions_Activity extends AppCompatActivity {
             }
         }
         Answers_Service answers_service = new Answers_Service(this);
-        answers_service.execute(token, Integer.toString(landmarkId), answers.toString());
+        answers_service.execute(Integer.toString(landmarkId), answers.toString());
     }
 
     public void switchToRoute(Boolean correct) {
         toast(correct ? "Raspunsurile sunt corecte" : "Cel putin un raspuns este gresit");
         Intent intent = new Intent(getApplicationContext(), Route_Activity.class);
         intent.putExtra("RouteId", routeId);
-        intent.putExtra("TOKEN", token);
         startActivity(intent);
     }
 

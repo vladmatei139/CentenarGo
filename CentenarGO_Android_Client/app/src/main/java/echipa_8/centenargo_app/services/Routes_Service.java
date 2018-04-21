@@ -14,6 +14,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import echipa_8.centenargo_app.activities.Routes_Activity;
+import echipa_8.centenargo_app.utilities.SharedPreferencesUtility;
 
 
 /**
@@ -31,6 +32,7 @@ public class Routes_Service extends AsyncTask<String, String, Object> {
     @Override
     protected Object doInBackground(String... strings) {
         try {
+            String token = SharedPreferencesUtility.getToken();
             URL url = new URL("http://10.0.2.2:8080/api/routes");
 
             HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
@@ -41,7 +43,7 @@ public class Routes_Service extends AsyncTask<String, String, Object> {
             httpURLConnection.connect();
 
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("token", strings[0]);
+            jsonObject.put("token", token);
 
             DataOutputStream dos = new DataOutputStream(httpURLConnection.getOutputStream());
             dos.writeBytes(jsonObject.toString());

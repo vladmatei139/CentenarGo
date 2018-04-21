@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import echipa_8.centenargo_app.activities.Questions_Activity;
+import echipa_8.centenargo_app.utilities.SharedPreferencesUtility;
 
 public class Answers_Service extends AsyncTask<String, String, Object> {
 
@@ -36,7 +37,7 @@ public class Answers_Service extends AsyncTask<String, String, Object> {
     @Override
     protected Object doInBackground (String... strings) {
         try {
-            URL url = new URL("http://10.0.2.2:8080/api/landmark/" + strings[1] + "/questions/validate-answers/");
+            URL url = new URL("http://10.0.2.2:8080/api/landmark/" + strings[0] + "/questions/validate-answers/");
 
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("POST");
@@ -45,9 +46,10 @@ public class Answers_Service extends AsyncTask<String, String, Object> {
             httpURLConnection.setRequestProperty("Accept", "application/java");
             httpURLConnection.connect();
 
+            String token = SharedPreferencesUtility.getToken();
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("token", strings[0]);
-            jsonObject.put("answers", new JSONArray(strings[2]));
+            jsonObject.put("token", token);
+            jsonObject.put("answers", new JSONArray(strings[1]));
 
             DataOutputStream dos = new DataOutputStream(httpURLConnection.getOutputStream());
             dos.writeBytes(jsonObject.toString());

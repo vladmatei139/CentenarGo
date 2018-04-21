@@ -13,13 +13,13 @@ import org.json.JSONObject;
 
 import echipa_8.centenargo_app.R;
 import echipa_8.centenargo_app.services.Landmark_Service;
+import echipa_8.centenargo_app.utilities.SharedPreferencesUtility;
 
 public class Landmark_Activity extends AppCompatActivity {
 
     private GlideImageView mLandmarkImage;
     private TextView mLandmarkTitle;
     private TextView mLandmarkDescription;
-    private Integer mRouteId;
     private Integer mLandmarkId;
     private Toolbar mActionBarToolbar;
 
@@ -28,9 +28,8 @@ public class Landmark_Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
-        String token = intent.getStringExtra("TOKEN");
+        String token = SharedPreferencesUtility.getToken();
         setContentView(R.layout.activity_landmark_);
-        mRouteId = intent.getIntExtra("RouteId", 0);
         mLandmarkId = intent.getIntExtra("LandmarkId", 0);
 
         Landmark_Service landmarkService = new Landmark_Service(this);

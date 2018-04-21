@@ -29,13 +29,13 @@ router.post('/signup', errorCatcher(async (req, res) => {
 						RETURNING id`, 
                         [req.body.username, req.body.email, hash]);
 
-	await client.query(`INSERT INTO userdetails (lastname, firstname, userid, currentroute) 
-                        VALUES ($1::text, $2::text, $3::uuid, 1)`, 
+	await client.query(`INSERT INTO userdetails (lastname, firstname, userid) 
+                        VALUES ($1::text, $2::text, $3::uuid)`, 
                         [req.body.lastname, req.body.firstname, result.rows[0].id]);
 
-	await client.query(`INSERT INTO userroutes (routeid, datecompleted, currentlandmark, userid)
+	/*await client.query(`INSERT INTO userroutes (routeid, datecompleted, currentlandmark, userid)
 						VALUES (1, null, 1, $1::uuid)`,
-						[result.rows[0].id])
+						[result.rows[0].id])*/
 
     res.sendStatus(200);
 }));
@@ -94,21 +94,67 @@ router.post('/routes', errorCatcher(async (req, res, next) => {
     res.status(200).json({routes: rows});
 }));
 
-router.post('/route/:routeId', errorCatcher(async (req, res, next) => {
+router.post('/getCurrentInfo/:routeId', errorCatcher(async (req, res, next) => {
+	/**
+	 * Se ia ruta curenta pentru un anumit user
+	 */
+	
+	const { rows } = await client.query(`SELECT currentroute
+                                         FROM userdetails
+                                         WHERE userid = $1::uuid`, [req.id]);
+    if (rows.length === 0) {
+        res.status(500).send('No current route.');
+        return;
+    }
+	let currentRoute = {currentroute: rows[0].currentroute}.currentroute;
+	
+	let rowsCurrentCompleted = await client.query(`SELECT 1
+									 FROM userroutes
+									 WHERE userid = $1::uuid
+									 AND routeid = $2::int
+									 AND datecompleted IS NOT NULL`, [req.id, currentRoute]); 
+	
+	let rowsNewCompleted = await client.query(`SELECT 1
+									 FROM userroutes
+									 WHERE userid = $1::uuid
+									 AND routeid = $2::int
+									 AND datecompleted IS NOT NULL`, [req.id, req.params.routeId]); 
+	
+	res.status(200).json({currentroute: rows[0].currentroute, currentCompleted: rowsCurrentCompleted.rows.length, newCompleted: rowsNewCompleted.rows.length});
+}));
+
+router.post('/routeLoad/:routeId', errorCatcher(async (req, res, next) => {
     /**
      * Se extrag obiectivele pentru ruta ceruta.
      * Daca ruta ceruta nu este cea curenta, se intoarce doar primul obiectiv.
      * Altfel, se intorc toate obiectivele pana la cel curent inclusiv.
      */
-    const { rows } = await client.query(`SELECT l.id, l.name, l.latitude, l.longitude, l.routeorder as routerorder
+	
+	let rowsCurrentLandmark = await client.query(`SELECT currentlandmark
+									 FROM userroutes r
+									 WHERE userid = $1::uuid
+									 AND routeid = $2::int`, [req.id, req.params.routeId]); 
+	if (rowsCurrentLandmark.rows.length === 0) {
+        res.status(500).send('No current landmark.');
+        return;
+    }
+	
+	let currentLandmark = {currentlandmark: rowsCurrentLandmark.rows[0].currentlandmark }.currentlandmark;
+	
+    let rowsLandmarks = await client.query(`SELECT l.id, l.name, l.latitude, l.longitude, l.routeorder as routerorder
                                           FROM landmarks l
                                           WHERE l.route = $1::int
-										  ORDER BY routeorder`, [req.params.routeId]);
-    if (rows.length === 0) {
+										  AND routeorder <= 
+											(SELECT routeOrder
+											FROM landmarks
+											WHERE id = $2::int)
+										  ORDER BY routeorder`, [req.params.routeId, currentLandmark]);
+
+    if (rowsLandmarks.rows.length === 0) {
         res.status(500).send('Route has no landmarks or does not exist.');
         return;
     }
-    res.status(200).send({landmarks: rows});
+    res.status(200).send({landmarks: rowsLandmarks.rows});
 }));
 
 router.post('/landmark/:landmarkId', errorCatcher(async (req, res, next) => {
@@ -144,28 +190,92 @@ router.post('/landmark/:landmarkId', errorCatcher(async (req, res, next) => {
     res.status(200).json({landmark: landmark, image: landmark.name + '.jpg'});
 }));
 
+router.use(express.static(dir));
+
 router.post('/route/change/:routeId', errorCatcher(async (req, res, next) => {
     /**
      * Schimba ruta curenta.
      */
-    await client.query('BEGIN');
-    await client.query(`UPDATE userroutes
-                        SET routeid = $2::int,
-                            currentlandmark = (
-                                SELECT id
-                                FROM landmarks
-                                WHERE route = $2::int
-                                AND routeorder = 1
-                            )
-                        WHERE userid = $1::uuid
-                        AND routeid = (
-                            SELECT currentroute
-                            FROM userdetails
-                            WHERE userid = $1::uuid)`, [req.id, req.params.routeId]);
-    await client.query(`UPDATE userdetails
-                        SET currentroute = $2::int
-                        WHERE userid = $1::uuid`, [req.id, req.params.routeId]);
-    await client.query('COMMIT');
+	await client.query('BEGIN');
+	const { rows } = await client.query(`SELECT 1
+                                         FROM userdetails
+                                         WHERE userid = $1::uuid
+										 AND currentroute IS NOT NULL`, [req.id]);
+    if (rows.length === 0) {
+		await client.query(`UPDATE userdetails
+							SET currentroute = $2::int
+							WHERE userid = $1::uuid`, [req.id, req.params.routeId]);
+		
+		let rowsLandmark = await client.query(`SELECT id
+												FROM landmarks
+												WHERE route = $1::int
+												ORDER BY routeorder
+												LIMIT 1`, [req.params.routeId]);
+		if (rowsLandmark.rows.length === 0) {
+			res.status(500).send('No first landmark.');
+			return;
+		}
+		
+		let firstLandmark = {firstlandmark: rowsLandmark.rows[0].id }.firstlandmark;		
+		
+		await client.query(`INSERT INTO userroutes(routeid, currentlandmark, userid)
+							VALUES($3::int, $2::int, $1::uuid)`, [req.id, firstLandmark, req.params.routeId]);
+    
+	}
+	else {
+		let rowsRoute = await client.query(`SELECT routeid
+											FROM userroutes
+											WHERE routeid = $1::int
+											AND userid = $2::uuid`, [req.params.routeId, req.id]);
+		if (rowsRoute.rows.length === 0) {
+			let rowsLandmark = await client.query(`SELECT id
+												FROM landmarks
+												WHERE route = $1::int
+												ORDER BY routeorder
+												LIMIT 1`, [req.params.routeId]);
+			if (rowsLandmark.rows.length === 0) {
+				res.status(500).send('No first landmark.');
+				return;
+			}
+			
+			let firstLandmark = {firstlandmark: rowsLandmark.rows[0].id }.firstlandmark;		
+			
+			await client.query(`INSERT INTO userroutes(routeid, currentlandmark, userid)
+							VALUES($3::int, $2::int, $1::uuid)`, [req.id, firstLandmark, req.params.routeId]);
+		}
+		else {
+			await client.query(`UPDATE userroutes
+								SET currentlandmark = (
+										SELECT id
+										FROM landmarks
+										WHERE route = (
+											SELECT currentroute
+											FROM userdetails
+											WHERE userid = $1::uuid)
+										AND routeorder = 1)
+								WHERE userid = $1::uuid
+								AND routeid = (
+									SELECT currentroute
+									FROM userdetails
+									WHERE userid = $1::uuid)
+								AND datecompleted IS NULL`, [req.id]);
+									
+			await client.query(`UPDATE userroutes
+								SET currentlandmark = (
+										SELECT id
+										FROM landmarks
+										WHERE route = $2::int
+										AND routeorder = 1
+									)
+								WHERE userid = $1::uuid
+								AND routeid = $2::int
+								AND datecompleted IS NULL`, [req.id, req.params.routeId]);
+		}
+		await client.query(`UPDATE userdetails
+							SET currentroute = $2::int
+							WHERE userid = $1::uuid`, [req.id, req.params.routeId]);
+	}
+	await client.query('COMMIT');
     res.sendStatus(200);
 }));
 

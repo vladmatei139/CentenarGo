@@ -30,9 +30,8 @@
         <activity android:name=".activities.Register_Activity" android:windowSoftInputMode="stateVisible|adjustResize" />
         <activity android:name=".activities.Routes_Activity" />
         <activity android:name=".activities.Route_Activity" />
-        <activity android:name=".activities.Landmark_Activity"></activity>
-        <activity android:name=".activities.Questions_Activity">
-        </activity>
+        <activity android:name=".activities.Landmark_Activity" />
+        <activity android:name=".activities.Questions_Activity" />
     </application>
 
 </manifest>

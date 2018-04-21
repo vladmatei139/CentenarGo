@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import echipa_8.centenargo_app.R;
 import echipa_8.centenargo_app.services.Register_Service;
+import echipa_8.centenargo_core.utilities.ValidationUtility;
 
 public class Register_Activity extends AppCompatActivity {
 
@@ -38,6 +39,11 @@ public class Register_Activity extends AppCompatActivity {
 
         if(!password.equals(repeatPass)){
             toast("Passwords don't match");
+            return;
+        }
+
+        if(!ValidationUtility.isValidEmail(email)){
+            toast("Email address is not valid!");
             return;
         }
 
