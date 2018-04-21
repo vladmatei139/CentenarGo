@@ -1,6 +1,8 @@
 const express    = require('express');
 const app        = express();
 const bodyParser = require('body-parser');
+const morgan  	 = require('morgan');
+morgan(':method :url :status :res[content-length] - :response-time ms')
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 const api = require('./api');

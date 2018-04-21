@@ -25,9 +25,15 @@ router.post('/signup', errorCatcher(async (req, res) => {
                         VALUES ($1::text, $2::text, $3::text)
 						RETURNING id`, 
                         [req.body.username, req.body.email, hash]);
-	await client.query(`INSERT INTO userdetails (lastname, firstname, userid) 
-                        VALUES ($1::text, $2::text, $3::uuid)`, 
+
+	await client.query(`INSERT INTO userdetails (lastname, firstname, userid, currentroute) 
+                        VALUES ($1::text, $2::text, $3::uuid, 1)`, 
                         [req.body.lastname, req.body.firstname, result.rows[0].id]);
+
+	await client.query(`INSERT INTO userroutes (routeid, datecompleted, currentlandmark, userid)
+						VALUES (1, null, 1, $1::uuid)`,
+						[result.rows[0].id])
+
     res.sendStatus(200);
 }));
 
@@ -51,7 +57,7 @@ router.post('/login', errorCatcher(async (req, res) => {
 router.use((req, res, next) => {
 
     let token = req.body.token || req.query.token || req.headers['x-access-token'];
-
+    console.log('Token-ul este ' + token);
     if (token) {
         jwt.verify(token, config.tokenSecret, (err, decoded) => {
             if (err) {
@@ -63,6 +69,7 @@ router.use((req, res, next) => {
                 return;
             } 
             req.id = decoded.id;
+            console.log('ID TOKEN: ' + req.id);
             next();
         });
     }
@@ -109,6 +116,9 @@ router.post('/landmark/:landmarkId', errorCatcher(async (req, res, next) => {
      * Se intoarce obiectivul cerut din ruta curenta, cu toate datele din tabel.
      * Daca obiectivul este cel curent, content-ul se trunchiaza la 100 de caractere.
      */
+    
+    console.log(`Id-ul este: ` + req.id);
+
     const { rows } = await client.query(`SELECT l.id, l.name, l.content, l.route, l.latitude, l.longitude, l.routeorder, LEAST(1, COALESCE(ur.currentlandmark, 0)) as is_current
                                          FROM landmarks l
                                          JOIN routes r ON r.id = l.route
@@ -122,10 +132,13 @@ router.post('/landmark/:landmarkId', errorCatcher(async (req, res, next) => {
                                              JOIN userroutes ON landmarks.route = userroutes.routeid 
                                              WHERE id = userroutes.currentlandmark
                                              AND userid = $1::uuid)`, [req.id, req.params.landmarkId]);
+
+
     if (rows.length === 0) {
         res.status(400).send('Landmark part of the current route, but more advanced than the current landmark, is not part of the current route, or does not exist.');
         return;
     }
+    
     landmark = rows[0];
     landmark.is_current = landmark.is_current > 0;
     if (landmark.is_current) {
