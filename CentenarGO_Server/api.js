@@ -50,7 +50,7 @@ router.post('/login', errorCatcher(async (req, res) => {
     }
     same = await bcrypt.compare(req.body.password, rows[0].hash);
     if (same) {
-        token = await jwt.sign({id: rows[0].id}, config.tokenSecret, {expiresIn: 30 * 24 * 60}); 
+        token = await jwt.sign({data: rows[0].id}, config.tokenSecret, {expiresIn: 30 * 24 * 60}); 
         res.status(200).json({token: token});
         return;
     }
@@ -58,9 +58,7 @@ router.post('/login', errorCatcher(async (req, res) => {
 }));
 
 router.use((req, res, next) => {
-
     let token = req.body.token || req.query.token || req.headers['x-access-token'];
-    console.log('Token-ul este ' + token);
     if (token) {
         jwt.verify(token, config.tokenSecret, (err, decoded) => {
             if (err) {
@@ -72,7 +70,6 @@ router.use((req, res, next) => {
                 return;
             } 
             req.id = decoded.id;
-            console.log('ID TOKEN: ' + req.id);
             next();
         });
     }
@@ -119,9 +116,6 @@ router.post('/landmark/:landmarkId', errorCatcher(async (req, res, next) => {
      * Se intoarce obiectivul cerut din ruta curenta, cu toate datele din tabel.
      * Daca obiectivul este cel curent, content-ul se trunchiaza la 100 de caractere.
      */
-    
-    console.log(`Id-ul este: ` + req.id);
-
     const { rows } = await client.query(`SELECT l.id, l.name, l.content, l.route, l.latitude, l.longitude, l.routeorder, LEAST(1, COALESCE(ur.currentlandmark, 0)) as is_current
                                          FROM landmarks l
                                          JOIN routes r ON r.id = l.route
