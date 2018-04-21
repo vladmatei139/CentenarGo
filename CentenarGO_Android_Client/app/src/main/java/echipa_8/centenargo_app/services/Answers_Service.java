@@ -25,18 +25,18 @@ import java.util.Map;
 
 import echipa_8.centenargo_app.activities.Questions_Activity;
 
-public class Questions_Service extends AsyncTask<String, String, Object> {
+public class Answers_Service extends AsyncTask<String, String, Object> {
 
     private WeakReference<Questions_Activity> questions_activity;
 
-    public Questions_Service(final Questions_Activity questions_activity) {
+    public Answers_Service(final Questions_Activity questions_activity) {
         this.questions_activity = new WeakReference<>(questions_activity);
     }
 
     @Override
     protected Object doInBackground (String... strings) {
         try {
-            URL url = new URL("http://10.0.2.2:8080/api/landmark/" + strings[1] + "/questions/");
+            URL url = new URL("http://10.0.2.2:8080/api/landmark/" + strings[1] + "/questions/validate-answers/");
 
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("POST");
@@ -47,6 +47,7 @@ public class Questions_Service extends AsyncTask<String, String, Object> {
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("token", strings[0]);
+            jsonObject.put("answers", new JSONArray(strings[2]));
 
             DataOutputStream dos = new DataOutputStream(httpURLConnection.getOutputStream());
             dos.writeBytes(jsonObject.toString());
@@ -65,23 +66,9 @@ public class Questions_Service extends AsyncTask<String, String, Object> {
             in.close();
 
             JSONObject json = new JSONObject(response.toString());
+            Boolean result = (Boolean) json.get("correct");
 
-            Map<Integer, Map<String, Object>> result = new HashMap<>();
-            Iterator<String> keys = json.keys();
-            while (keys.hasNext()) {
-                String key = keys.next();
-                Map<String, Object> object = new HashMap<>();
-                JSONObject obj = new JSONObject(json.get(key).toString());
-                object.put("question", obj.get("question"));
-                JSONArray answers = obj.getJSONArray("answers");
-                List<Pair<Integer, String>> answersList = new ArrayList<>();
-                for (int i = 0; i < answers.length(); i++) {
-                    JSONObject answer = new JSONObject(answers.get(i).toString());
-                    answersList.add(new Pair<>(Integer.valueOf((Integer) answer.get("id")), (String) answer.get("answer")));
-                }
-                object.put("answers", answersList);
-                result.put(Integer.valueOf(key), object);
-            }
+            //TODO update currentlandmark for user (new end-point)
 
             return result;
         }
@@ -94,7 +81,7 @@ public class Questions_Service extends AsyncTask<String, String, Object> {
     @Override
     protected void onPostExecute (Object o) {
         super.onPostExecute(o);
-        questions_activity.get().setQuestions((Map<Integer, Map<String, Object>>)(null == o ? null : o));
+        questions_activity.get().switchToRoute((Boolean) o);
     }
 
 
