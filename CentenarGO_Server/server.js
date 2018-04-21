@@ -13,7 +13,7 @@ const bcrypt = api.bcrypt;
 app.use('/api', api.router);
 app.use((req, res) => {
     res.sendStatus(404);
-})
+});
 
 port = process.env.PORT || 8080;
 app.listen(port,'0.0.0.0');

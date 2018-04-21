@@ -31,7 +31,7 @@ public class Routes_Service extends AsyncTask<String, String, Object> {
     @Override
     protected Object doInBackground(String... strings) {
         try {
-            URL url = new URL("http://10.0.2.2:8080/api/routes");
+            URL url = new URL("http://192.168.1.2:8080/api/routes");
 
             HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
             httpURLConnection.setRequestMethod("POST");
