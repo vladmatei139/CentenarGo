@@ -16,7 +16,7 @@ const bcrypt = require('bcrypt');
 const router = express.Router(); 
 
 const path = require('path')
-
+const dir = path.join(__dirname, 'public')
 
 const errorCatcher = fn => (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next); 
@@ -144,9 +144,6 @@ router.post('/landmark/:landmarkId', errorCatcher(async (req, res, next) => {
     res.status(200).json({landmark: landmark, image: landmark.name + '.jpg'});
 }));
 
-
-
-
 router.post('/route/change/:routeId', errorCatcher(async (req, res, next) => {
     /**
      * Schimba ruta curenta.
@@ -231,8 +228,7 @@ router.post('/landmark/:landmarkId/questions/validate-answers', errorCatcher(asy
                                     WHERE route = ur.routeid
                                 ) THEN now()
                                 ELSE NULL END
-                            WHERE userid = $1::uuid
-                            AND currentlandmark = $2::int`, [req.id, req.params.landmarkId]);
+                            WHERE userid = $1::uuid`, [req.id]);
     }
     res.status(200).json({'correct': correct});
 }));
