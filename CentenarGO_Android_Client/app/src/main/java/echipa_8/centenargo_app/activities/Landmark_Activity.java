@@ -19,6 +19,7 @@ public class Landmark_Activity extends AppCompatActivity {
     private GlideImageView mLandmarkImage;
     private TextView mLandmarkTitle;
     private TextView mLandmarkDescription;
+    private Integer mRouteId;
     private Integer mLandmarkId;
     private Toolbar mActionBarToolbar;
 
@@ -29,6 +30,7 @@ public class Landmark_Activity extends AppCompatActivity {
         Intent intent = getIntent();
         String token = intent.getStringExtra("TOKEN");
         setContentView(R.layout.activity_landmark_);
+        mRouteId = intent.getIntExtra("RouteId", 0);
         mLandmarkId = intent.getIntExtra("LandmarkId", 0);
 
         Landmark_Service landmarkService = new Landmark_Service(this);
@@ -62,7 +64,7 @@ public class Landmark_Activity extends AppCompatActivity {
             mLandmarkTitle.setText(title);
             mLandmarkDescription.setText(content);
 
-            loadImageFromURL("http://192.168.1.2:8080/" + imgName);
+            loadImageFromURL("http://10.0.2.2:8080/" + imgName);
 
         } catch (JSONException e) {
             e.printStackTrace();

@@ -231,7 +231,8 @@ router.post('/landmark/:landmarkId/questions/validate-answers', errorCatcher(asy
                                     WHERE route = ur.routeid
                                 ) THEN now()
                                 ELSE NULL END
-                            WHERE userid = $1::uuid`, [req.id]);
+                            WHERE userid = $1::uuid
+                            AND currentlandmark = $2::int`, [req.id, req.params.landmarkId]);
     }
     res.status(200).json({'correct': correct});
 }));

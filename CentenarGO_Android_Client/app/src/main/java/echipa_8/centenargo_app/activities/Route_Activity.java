@@ -57,7 +57,7 @@ public class Route_Activity extends AppCompatActivity implements OnMapReadyCallb
         RecyclerView landmarksView = findViewById(R.id.recyclerView_landmarks);
         RecyclerView.LayoutManager landmarksLayoutManager = new LinearLayoutManager(this);
         landmarksView.setLayoutManager(landmarksLayoutManager);
-        RecyclerView.Adapter landmarksAdapter = new RecycleViewLandmarkAdapter(this, identifiers, mToken);
+        RecyclerView.Adapter landmarksAdapter = new RecycleViewLandmarkAdapter(this, identifiers, mRouteId, mToken);
         landmarksView.setAdapter(landmarksAdapter);
 
         if (MapUtility.getLocationPermission(this))
