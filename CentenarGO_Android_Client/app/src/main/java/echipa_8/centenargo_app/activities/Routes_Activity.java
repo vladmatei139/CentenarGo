@@ -110,7 +110,7 @@ public class Routes_Activity extends AppCompatActivity implements OnMapReadyCall
     public void setRoute(final String result, final int currentCompleted, final int newCompleted, String lastRoute) {
         if (result.equals(lastRoute)) {
             Intent intent = new Intent(this.getApplicationContext(), Route_Activity.class);
-            intent.putExtra("routeId", result);
+            intent.putExtra(getString(R.string.route_id_key), Integer.parseInt(result));
             this.startActivity(intent);
             return;
         }
@@ -138,7 +138,7 @@ public class Routes_Activity extends AppCompatActivity implements OnMapReadyCall
         }
         else {
             Intent intent = new Intent(this.getApplicationContext(), Route_Activity.class);
-            intent.putExtra("routeId", result);
+            intent.putExtra(getString(R.string.route_id_key), Integer.parseInt(result));
             this.startActivity(intent);
         }
     }
@@ -150,7 +150,7 @@ public class Routes_Activity extends AppCompatActivity implements OnMapReadyCall
 
     public void changeRouteIntent(String result) {
         Intent intent = new Intent(this.getApplicationContext(), Route_Activity.class);
-        intent.putExtra("routeId", result);
+        intent.putExtra(getString(R.string.route_id_key), Integer.parseInt(result));
         this.startActivity(intent);
     }
 }

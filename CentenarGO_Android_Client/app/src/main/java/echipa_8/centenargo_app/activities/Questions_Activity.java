@@ -47,15 +47,15 @@ public class Questions_Activity extends AppCompatActivity {
         Intent intent = getIntent();
         String token = SharedPreferencesUtility.getToken();
         setContentView(R.layout.activity_questions_);
-        routeId = intent.getIntExtra("RouteId", 0);
-        landmarkId = intent.getIntExtra("LandmarkId", 0);
+        routeId = intent.getIntExtra(getString(R.string.route_id_key), 0);
+        landmarkId = intent.getIntExtra(getString(R.string.landmark_id_key), 0);
 
         mActionBarToolbar = findViewById(R.id.toolbar_questions);
         mActionBarToolbar.setTitle("CentenarGo");
         setSupportActionBar(mActionBarToolbar);
 
         Questions_Service questions_service = new Questions_Service(this);
-        questions_service.execute(token, Integer.toString(landmarkId), Integer.toString(routeId));
+        questions_service.execute(Integer.toString(landmarkId), Integer.toString(routeId));
     }
 
     public void setQuestions(Map<Integer, Map<String, Object>> response) {
@@ -104,14 +104,22 @@ public class Questions_Activity extends AppCompatActivity {
             }
         }
         Answers_Service answers_service = new Answers_Service(this);
-        answers_service.execute(Integer.toString(landmarkId), answers.toString());
+        answers_service.execute(Integer.toString(landmarkId), answers.toString(), routeId.toString());
     }
 
     public void switchToRoute(Boolean correct) {
         toast(correct ? "Raspunsurile sunt corecte" : "Cel putin un raspuns este gresit");
-        Intent intent = new Intent(getApplicationContext(), Route_Activity.class);
-        intent.putExtra("RouteId", routeId);
-        startActivity(intent);
+        if (correct) {
+            Intent intent = new Intent(getApplicationContext(), Route_Activity.class);
+            intent.putExtra(getString(R.string.route_id_key), routeId);
+            startActivity(intent);
+        }
+        else {
+            Intent intent = new Intent(getApplicationContext(), Landmark_Activity.class);
+            intent.putExtra(getString(R.string.route_id_key), routeId);
+            intent.putExtra(getString(R.string.landmark_id_key), landmarkId);
+            startActivity(intent);
+        }
     }
 
 }

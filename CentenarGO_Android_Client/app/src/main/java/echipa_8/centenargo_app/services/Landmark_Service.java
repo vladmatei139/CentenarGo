@@ -16,6 +16,7 @@ import java.net.URL;
 
 import echipa_8.centenargo_app.activities.Landmark_Activity;
 import echipa_8.centenargo_app.activities.Route_Activity;
+import echipa_8.centenargo_app.utilities.SharedPreferencesUtility;
 
 /**
  * Created by Ioan-Emanuel Popescu on 16-Apr-18.
@@ -32,7 +33,7 @@ public class Landmark_Service extends AsyncTask<String, String, Object> {
     @Override
     protected Object doInBackground(String... strings) {
         try {
-            URL url = new URL("http://10.0.2.2:8080/api/landmark" + "/" + strings[1]);
+            URL url = new URL("http://10.0.2.2:8080/api/landmark");
 
             HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
             httpURLConnection.setRequestMethod("POST");
@@ -41,10 +42,12 @@ public class Landmark_Service extends AsyncTask<String, String, Object> {
             httpURLConnection.setRequestProperty("Accept", "application/json");
             httpURLConnection.connect();
 
+            String token = SharedPreferencesUtility.getToken();
 
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("token", strings[0]);
-            jsonObject.put("landmarkId", strings[1]);
+            jsonObject.put("token", token);
+            jsonObject.put("landmarkId", strings[0]);
+            jsonObject.put("routeId", strings[1]);
 
             DataOutputStream dos = new DataOutputStream(httpURLConnection.getOutputStream());
             dos.writeBytes(jsonObject.toString());
@@ -65,22 +68,6 @@ public class Landmark_Service extends AsyncTask<String, String, Object> {
 
             JSONObject replyJSON = new JSONObject(response.toString());
 
-            StringBuilder sb = new StringBuilder();
-
-            JSONObject landmarkJSON = new JSONObject(replyJSON.getString("landmark"));
-
-            String id         = landmarkJSON.getString("id");
-            String name       = landmarkJSON.getString("name");
-            String content    = landmarkJSON.getString("content");
-            String latitude   = landmarkJSON.getString("latitude");
-            String longitude  = landmarkJSON.getString("longitude");
-            String routeorder = landmarkJSON.getString("routeorder");
-            String is_current = landmarkJSON.getString("is_current");
-
-            sb.append(id + "," + name + "," + content + "," + latitude + ","
-                    + longitude + "," + routeorder + "," + is_current + '\n');
-
-            String routes = sb.toString();
             if (replyCode == 200) {
                 Log.i("STATUS", replyCode.toString());
                 Log.i("MESSAGE", replyMessage);
@@ -101,18 +88,5 @@ public class Landmark_Service extends AsyncTask<String, String, Object> {
     protected void onPostExecute(Object o) {
         super.onPostExecute(o);
         this.landmark_activity_.get().setLandmark(null == o ? null : o.toString());
-    }
-
-    protected String getFirstWords(String text, int n){
-        String [] arr = text.split("\\s+");
-        StringBuilder nWords = new StringBuilder();
-
-        // concatenating number of words that you required
-        for(int i=0; i < n ; i++){
-            nWords.append(arr[i]);
-            nWords.append(" ");
-        }
-
-        return nWords.toString();
     }
 }

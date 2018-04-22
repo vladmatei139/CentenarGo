@@ -22,10 +22,12 @@ import echipa_8.centenargo_app.activities.Landmark_Activity;
 public class RecycleViewLandmarkAdapter extends RecyclerView.Adapter<RecycleViewLandmarkAdapter.LandmarkViewHolder> {
 
     private Pair<String[], int[]> mIdentifiers;
+    private Integer mRouteId;
     private WeakReference<Context> mContext;
 
-    public RecycleViewLandmarkAdapter(Context context, Pair<String[], int[]> identifiers) {
+    public RecycleViewLandmarkAdapter(Context context, Pair<String[], int[]> identifiers, Integer routeId) {
         mIdentifiers = identifiers;
+        mRouteId = routeId;
         mContext = new WeakReference<>(context);
     }
 
@@ -53,7 +55,8 @@ public class RecycleViewLandmarkAdapter extends RecyclerView.Adapter<RecycleView
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext.get().getApplicationContext(), Landmark_Activity.class);
-                intent.putExtra("LandmarkId", mIdentifiers.second[position]);
+                intent.putExtra(mContext.get().getString(R.string.landmark_id_key), mIdentifiers.second[position]);
+                intent.putExtra(mContext.get().getString(R.string.route_id_key), mRouteId);
                 mContext.get().startActivity(intent);
             }
         });

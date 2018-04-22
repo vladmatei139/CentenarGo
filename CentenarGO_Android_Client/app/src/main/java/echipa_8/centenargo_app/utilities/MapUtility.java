@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import echipa_8.centenargo_app.activities.Landmark_Activity;
+
 public class MapUtility {
 
     public static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
@@ -67,6 +69,42 @@ public class MapUtility {
                                         .position(currentLatLng)
                                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
                                         .title("You are here"));
+
+                            } else {
+                                Toast.makeText(context, "You should enable location", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(context, "Can't get current location", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        } catch (SecurityException e) {
+            Log.e("Exception: %s", e.getMessage());
+        }
+    }
+
+    public static void validateLocation(final Landmark_Activity context , final double latitude, final double longitude) {
+        final FusedLocationProviderClient mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
+
+        try {
+            if (mLocationPermissionsGranted) {
+                Task locationResult =  mFusedLocationProviderClient.getLastLocation();
+                locationResult.addOnCompleteListener(context, new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        if (task.isSuccessful()) {
+                            mLastKnownLocation = (Location) task.getResult();
+                            if (mLastKnownLocation != null) {
+                                if (mLastKnownLocation.getAccuracy() > 50) {
+                                    Toast.makeText(context, "Activeaza Wi-fi, Locatie, Retea mobila", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                Location landmarkLocation = new Location("");
+                                landmarkLocation.setLatitude(latitude);
+                                landmarkLocation.setLongitude(longitude);
+                                context.locationResponse(mLastKnownLocation.distanceTo(landmarkLocation) < 50);
+
                             } else {
                                 Toast.makeText(context, "You should enable location", Toast.LENGTH_SHORT).show();
                             }

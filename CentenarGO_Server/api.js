@@ -157,24 +157,22 @@ router.post('/routeLoad/:routeId', errorCatcher(async (req, res, next) => {
     res.status(200).send({landmarks: rowsLandmarks.rows});
 }));
 
-router.post('/landmark/:landmarkId', errorCatcher(async (req, res, next) => {
+router.post('/landmark', errorCatcher(async (req, res, next) => {
     /**
      * Se intoarce obiectivul cerut din ruta curenta, cu toate datele din tabel.
      * Daca obiectivul este cel curent, content-ul se trunchiaza la 100 de caractere.
      */
-    const { rows } = await client.query(`SELECT l.id, l.name, l.content, l.route, l.latitude, l.longitude, l.routeorder, LEAST(1, COALESCE(ur.currentlandmark, 0)) as is_current
+    const { rows } = await client.query(`SELECT l.id, l.name, l.content, l.route, l.latitude, l.longitude, l.routeorder, 
+                        COALESCE((SELECT 1
+				FROM userroutes ur
+				WHERE datecompleted is NULL
+				AND ur.userId = $1::uuid
+				AND ur.routeId = $3::int
+				AND l.routeorder >= (SELECT routeorder
+									FROM landmarks
+									WHERE ur.currentlandmark = id)), 0) as is_current
                                          FROM landmarks l
-                                         JOIN routes r ON r.id = l.route
-                                         JOIN userdetails ud ON ud.currentroute = r.id 
-                                         LEFT JOIN userroutes ur ON ur.currentlandmark = l.id
-                                         WHERE ud.userid = $1::uuid 
-                                         AND l.id = $2::int
-                                         AND l.routeorder <= (
-                                             SELECT routeorder
-                                             FROM landmarks
-                                             JOIN userroutes ON landmarks.route = userroutes.routeid 
-                                             WHERE id = userroutes.currentlandmark
-                                             AND userid = $1::uuid)`, [req.id, req.params.landmarkId]);
+                                         WHERE l.id = $2::int`, [req.id, req.body.landmarkId, req.body.routeId]);
 
 
     if (rows.length === 0) {
@@ -188,6 +186,22 @@ router.post('/landmark/:landmarkId', errorCatcher(async (req, res, next) => {
         landmark.content = landmark.content.substr(0, Math.min(landmark.content.length, 100));
     }
     res.status(200).json({landmark: landmark, image: landmark.name + '.jpg'});
+}));
+
+
+router.post('/landmarkContent/:landmarkId', errorCatcher(async (req, res, next) => {
+    /**
+     * Se intoarce contentul obiectivului cerut din ruta curenta.
+     */
+    const { rows } = await client.query(`SELECT content
+                                         FROM landmarks
+                                         WHERE id = $1::int`, [req.params.landmarkId]);
+
+    if (rows.length === 0) {
+        res.status(400).send('Inexistent landmark.');
+        return;
+    }
+    res.status(200).json({content: rows[0].content});
 }));
 
 router.use(express.static(dir));
@@ -319,26 +333,27 @@ router.post('/landmark/:landmarkId/questions/validate-answers', errorCatcher(asy
     correct = (rows.length === 0);
     if (correct) {
         await client.query(`UPDATE userroutes ur
-                            SET currentlandmark = COALESCE(currentlandmark, (
+                        SET currentlandmark = COALESCE((
                                 SELECT l.id
                                 FROM landmarks l
                                 WHERE l.route = ur.routeid
                                 AND l.routeorder = 1 + (
-                                    SELECT routeorder
-                                    FROM landmarks
-                                    WHERE id = ur.currentlandmark))),
+                                        SELECT routeorder
+                                        FROM landmarks
+                                        WHERE id = ur.currentlandmark)), currentlandmark),
                                 datecompleted = 
                                 CASE WHEN (
-                                    SELECT routeorder
-                                    FROM landmarks
-                                    WHERE id = ur.currentlandmark
+                                        SELECT routeorder
+                                        FROM landmarks
+                                        WHERE id = ur.currentlandmark
                                 ) = (
-                                    SELECT MAX(routeorder)
-                                    FROM landmarks l
-                                    WHERE route = ur.routeid
+                                        SELECT MAX(routeorder)
+                                        FROM landmarks l
+                                        WHERE route = ur.routeid
                                 ) THEN now()
                                 ELSE NULL END
-                            WHERE userid = $1::uuid`, [req.id]);
+                        WHERE userid = $1::uuid
+                        AND routeid = $2::int`, [req.id, req.body.routeId]);
     }
     res.status(200).json({'correct': correct});
 }));

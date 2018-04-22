@@ -29,7 +29,7 @@ public class Route_Activity extends AppCompatActivity implements OnMapReadyCallb
     private static final LatLng ZERO_KM_BUCHAREST = new LatLng(44.4327025, 26.104049400000008);
 
     private String[] dataset;
-
+    private Integer mRoute;
     private GoogleMap mMap;
 
     Toolbar mActionBarToolbar;
@@ -38,7 +38,7 @@ public class Route_Activity extends AppCompatActivity implements OnMapReadyCallb
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        String routeId = intent.getStringExtra("routeId");
+        mRoute = intent.getIntExtra(getString(R.string.route_id_key), 0);
         setContentView(R.layout.activity_route_);
 
         mActionBarToolbar = findViewById(R.id.toolbar_route);
@@ -46,7 +46,7 @@ public class Route_Activity extends AppCompatActivity implements OnMapReadyCallb
         setSupportActionBar(mActionBarToolbar);
 
         Route_Service route_service = new Route_Service(this);
-        route_service.execute(routeId);
+        route_service.execute(mRoute.toString());
     }
 
     public void setLandmarks(String response) {
@@ -55,7 +55,7 @@ public class Route_Activity extends AppCompatActivity implements OnMapReadyCallb
         RecyclerView landmarksView = findViewById(R.id.recyclerView_landmarks);
         RecyclerView.LayoutManager landmarksLayoutManager = new LinearLayoutManager(this);
         landmarksView.setLayoutManager(landmarksLayoutManager);
-        RecyclerView.Adapter landmarksAdapter = new RecycleViewLandmarkAdapter(this, identifiers);
+        RecyclerView.Adapter landmarksAdapter = new RecycleViewLandmarkAdapter(this, identifiers, mRoute);
         landmarksView.setAdapter(landmarksAdapter);
 
         if (MapUtility.getLocationPermission(this))

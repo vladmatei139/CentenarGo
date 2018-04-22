@@ -56,8 +56,16 @@
         android:gravity="center"
         android:paddingTop="10dp"
         android:paddingBottom="10dp">
-        
+
         <Button
+            android:id="@+id/check_location_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Check Location" />
+
+        <Button
+            android:id="@+id/quiz_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="Quiz"
