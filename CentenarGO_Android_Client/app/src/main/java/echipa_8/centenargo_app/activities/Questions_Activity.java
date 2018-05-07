@@ -120,6 +120,7 @@ public class Questions_Activity extends AppCompatActivity {
             intent.putExtra(getString(R.string.landmark_id_key), landmarkId);
             startActivity(intent);
         }
+        finish();
     }
 
 }
