@@ -42,7 +42,6 @@ public class RecyclerViewImageGalleryAdapter extends RecyclerView.Adapter<Recycl
     private Resources resources;
     private File fileDir;
     private ImageLoader imageLoader;
-    private FixedQueue<Pair<Integer, BitmapDrawable>> cache;
 
     public RecyclerViewImageGalleryAdapter(List<Map<String, Object>> images,
                                            LayoutInflater inflater,
@@ -56,7 +55,6 @@ public class RecyclerViewImageGalleryAdapter extends RecyclerView.Adapter<Recycl
         this.resources = resources;
         this.fileDir = fileDir;
         this.imageLoader = ImageLoader.getInstance();
-        this.cache = new FixedQueue<>(100);
     }
 
     static class GalleryViewHolder extends RecyclerView.ViewHolder {
@@ -83,49 +81,28 @@ public class RecyclerViewImageGalleryAdapter extends RecyclerView.Adapter<Recycl
         Integer id = (Integer) images.get(position).get("id");
         String localPath = data.get("id") + ".png";
 
-        boolean found = false;
-        for (Pair<Integer, BitmapDrawable> pair : cache) {
-            if (pair.first.equals(id)) {
-                found = true;
-                holder.mImageView.setImageDrawable(pair.second);
-                break;
-            }
-        }
+        Image image = database.imageDAO().findById(id);
+        if (image == null) {
+            imageLoader.loadImage("http://10.0.2.2:8080/" + data.get("path"), new SimpleImageLoadingListener() {
+                @Override
+                public void onLoadingComplete(String imageUri, View view, Bitmap bitmap) {
 
-        if (!found) {
-            Image image = database.imageDAO().findById(id);
-            if (image == null) {
-                imageLoader.loadImage("http://10.0.2.2:8080/" + data.get("path"), new SimpleImageLoadingListener() {
-                    @Override
-                    public void onLoadingComplete(String imageUri, View view, Bitmap bitmap) {
-
-                        try (FileOutputStream outputStream = new FileOutputStream(new File(fileDir, localPath))) {
-                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        BitmapDrawable bitmapDrawable = new BitmapDrawable(resources, bitmap);
-                        cache.add(new Pair<>(id, bitmapDrawable));
-                        holder.mImageView.setImageDrawable(bitmapDrawable);
+                    try (FileOutputStream outputStream = new FileOutputStream(new File(fileDir, localPath))) {
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-
-                    @Override
-                    public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                        Log.println(Log.ERROR, "ImageError", "Image loading failed: " + failReason.toString());
-                    }
-                });
-            }
-            else {
-                File file = new File(localPath);
-                try (FileInputStream inputStream = new FileInputStream(file)) {
-                    byte[] buffer = new byte[(int) file.getTotalSpace()];
-                    int length = inputStream.read(buffer);
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(buffer, 0, length);
-                    holder.mImageView.setImageDrawable(new BitmapDrawable(resources, bitmap));
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    BitmapDrawable bitmapDrawable = new BitmapDrawable(resources, bitmap);
+                    holder.mImageView.setImageDrawable(bitmapDrawable);
                 }
-            }
+                @Override
+                public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                    Log.println(Log.ERROR, "ImageError", "Image loading failed: " + failReason.toString());
+                }
+            });
+        }
+        else {
+            imageLoader.displayImage(localPath, holder.mImageView);
         }
 
         holder.mLinearLayout.setOnClickListener(v -> goToImage(v, position));
