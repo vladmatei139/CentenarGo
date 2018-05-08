@@ -24,4 +24,7 @@ public interface ImageDAO {
 
     @Delete
     void delete(Image... image);
+
+    @Query("DELETE FROM Image")
+    void deleteAll();
 }

@@ -7,13 +7,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,7 +41,19 @@ public class Gallery_Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery_);
 
+        List<Map<String, Object>> images = new ArrayList<>();
+        AppDatabase database = AppDatabase.getInstance(this);
         RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        ImageLoaderConfiguration configuration = new ImageLoaderConfiguration.Builder(this).build();
+        ImageLoader.getInstance().init(configuration);
+
+        RecyclerView galleryView = findViewById(R.id.gallery_recycler_view);
+        RecyclerView.LayoutManager galleryLayoutManager = new StaggeredGridLayoutManager(3, 1);
+        galleryView.setLayoutManager(galleryLayoutManager);
+        RecyclerView.Adapter galleryAdapter = new RecyclerViewImageGalleryAdapter(images, LayoutInflater.from(this), database, getResources(), requestQueue, getFilesDir());
+        galleryView.setAdapter(galleryAdapter);
+
         JSONObject requestObject = new JSONObject();
         try {
             requestObject.put("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMyNmFlZTFlLTMwMzUtNDU5Ni1iMTg0LTJiNTY3Y2IyYjFhNCIsImlhdCI6MTUyNTc4Njg4MywiZXhwIjoxNTI1ODMwMDgzfQ.LT9SxIf7TyTfhfmjOU7EhDOdL6I594CdWiXov82K84I");
@@ -50,7 +66,6 @@ public class Gallery_Activity extends AppCompatActivity {
                 requestObject,
                 response -> {
                     try {
-                        List<Map<String, Object>> images = new ArrayList<>();
                         JSONArray arr = response.getJSONArray("images");
                         for (int i = 0; i < arr.length(); i++) {
                             JSONObject obj = arr.getJSONObject(i);
@@ -59,12 +74,7 @@ public class Gallery_Activity extends AppCompatActivity {
                                     "path", obj.get("path"),
                                     "title", obj.get("title")));
                         }
-                        AppDatabase database = AppDatabase.getInstance(this);
-                        RecyclerView galleryView = findViewById(R.id.gallery_recycler_view);
-                        RecyclerView.LayoutManager galleryLayoutManager = new GridLayoutManager(this, 3);
-                        galleryView.setLayoutManager(galleryLayoutManager);
-                        RecyclerView.Adapter galleryAdapter = new RecyclerViewImageGalleryAdapter(images, database, getResources(), requestQueue, getFilesDir());
-                        galleryView.setAdapter(galleryAdapter);
+                        galleryAdapter.notifyDataSetChanged();
                     }
                     catch (JSONException jsone) {
                         Log.println(Log.ERROR, "JSONError", "Error creating JSON array from JSONObject response: " + jsone.getMessage());
