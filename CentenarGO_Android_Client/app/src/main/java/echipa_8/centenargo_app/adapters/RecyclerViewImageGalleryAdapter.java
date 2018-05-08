@@ -20,8 +20,7 @@ public class RecyclerViewImageGalleryAdapter extends RecyclerView.Adapter<Recycl
     private List<Map<String, Object>> images;
     private LayoutInflater inflater;
 
-    public RecyclerViewImageGalleryAdapter(List<Map<String, Object>> images,
-                                           LayoutInflater inflater) {
+    public RecyclerViewImageGalleryAdapter(List<Map<String, Object>> images, LayoutInflater inflater) {
         this.images = images;
         this.inflater = inflater;
     }
