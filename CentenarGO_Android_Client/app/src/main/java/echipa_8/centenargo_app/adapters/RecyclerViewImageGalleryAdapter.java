@@ -54,7 +54,6 @@ public class RecyclerViewImageGalleryAdapter extends RecyclerView.Adapter<Recycl
         this.inflater = inflater;
         this.database = database;
         this.resources = resources;
-        this.requestQueue = requestQueue;
         this.fileDir = fileDir;
         this.imageLoader = ImageLoader.getInstance();
         this.cache = new FixedQueue<>(100);
