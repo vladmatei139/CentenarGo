@@ -1,60 +1,29 @@
 package echipa_8.centenargo_app.adapters;
 
-import android.content.AsyncTaskLoader;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.android.volley.RequestQueue;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.squareup.picasso.Picasso;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import echipa_8.centenargo_app.R;
-import echipa_8.centenargo_app.activities.Gallery_Activity;
-import echipa_8.centenargo_app.database.AppDatabase;
-import echipa_8.centenargo_app.database.Image;
-import echipa_8.centenargo_app.utilities.FixedQueue;
 
 public class RecyclerViewImageGalleryAdapter extends RecyclerView.Adapter<RecyclerViewImageGalleryAdapter.GalleryViewHolder> {
 
     private List<Map<String, Object>> images;
     private LayoutInflater inflater;
-    private AppDatabase database;
-    private Resources resources;
-    private File fileDir;
-    private ImageLoader imageLoader;
 
     public RecyclerViewImageGalleryAdapter(List<Map<String, Object>> images,
-                                           LayoutInflater inflater,
-                                           AppDatabase database,
-                                           Resources resources,
-                                           RequestQueue requestQueue,
-                                           File fileDir) {
+                                           LayoutInflater inflater) {
         this.images = images;
         this.inflater = inflater;
-        this.database = database;
-        this.resources = resources;
-        this.fileDir = fileDir;
-        this.imageLoader = ImageLoader.getInstance();
     }
 
     static class GalleryViewHolder extends RecyclerView.ViewHolder {
@@ -78,33 +47,10 @@ public class RecyclerViewImageGalleryAdapter extends RecyclerView.Adapter<Recycl
     public void onBindViewHolder(@NonNull GalleryViewHolder holder, final int position) {
 
         Map<String, Object> data = images.get(position);
-        Integer id = (Integer) images.get(position).get("id");
-        String localPath = data.get("id") + ".png";
-
-        Image image = database.imageDAO().findById(id);
-        if (image == null) {
-            imageLoader.loadImage("http://10.0.2.2:8080/" + data.get("path"), new SimpleImageLoadingListener() {
-                @Override
-                public void onLoadingComplete(String imageUri, View view, Bitmap bitmap) {
-
-                    try (FileOutputStream outputStream = new FileOutputStream(new File(fileDir, localPath))) {
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    BitmapDrawable bitmapDrawable = new BitmapDrawable(resources, bitmap);
-                    holder.mImageView.setImageDrawable(bitmapDrawable);
-                }
-                @Override
-                public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                    Log.println(Log.ERROR, "ImageError", "Image loading failed: " + failReason.toString());
-                }
-            });
-        }
-        else {
-            imageLoader.displayImage(localPath, holder.mImageView);
-        }
-
+        Picasso.get()
+                .load("http:10.0.2.2:8080/" + data.get("path"))
+                .placeholder(R.drawable.placeholder_image_square)
+                .into(holder.mImageView);
         holder.mLinearLayout.setOnClickListener(v -> goToImage(v, position));
     }
 

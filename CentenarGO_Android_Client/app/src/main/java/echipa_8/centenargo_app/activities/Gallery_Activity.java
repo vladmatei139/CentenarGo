@@ -31,7 +31,6 @@ import java.util.Map;
 import echipa_8.centenargo_app.R;
 import echipa_8.centenargo_app.adapters.RecycleViewLandmarkAdapter;
 import echipa_8.centenargo_app.adapters.RecyclerViewImageGalleryAdapter;
-import echipa_8.centenargo_app.database.AppDatabase;
 import echipa_8.centenargo_app.utilities.MapUtility;
 
 public class Gallery_Activity extends AppCompatActivity {
@@ -42,16 +41,12 @@ public class Gallery_Activity extends AppCompatActivity {
         setContentView(R.layout.activity_gallery_);
 
         List<Map<String, Object>> images = new ArrayList<>();
-        AppDatabase database = AppDatabase.getInstance(this);
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-
-        ImageLoaderConfiguration configuration = new ImageLoaderConfiguration.Builder(this).build();
-        ImageLoader.getInstance().init(configuration);
 
         RecyclerView galleryView = findViewById(R.id.gallery_recycler_view);
         RecyclerView.LayoutManager galleryLayoutManager = new StaggeredGridLayoutManager(3, 1);
         galleryView.setLayoutManager(galleryLayoutManager);
-        RecyclerView.Adapter galleryAdapter = new RecyclerViewImageGalleryAdapter(images, LayoutInflater.from(this), database, getResources(), requestQueue, getFilesDir());
+        RecyclerView.Adapter galleryAdapter = new RecyclerViewImageGalleryAdapter(images, LayoutInflater.from(this));
         galleryView.setAdapter(galleryAdapter);
 
         JSONObject requestObject = new JSONObject();
