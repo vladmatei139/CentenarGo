@@ -30,6 +30,7 @@ public class Landmark_Activity extends AppCompatActivity {
     private TextView mLandmarkDescription;
     private Button mQuizButton;
     private Button mCheckLocationButton;
+    private Button mUploadButton;
     private Integer mLandmarkId;
     private Integer mRouteId;
     private Toolbar mActionBarToolbar;
@@ -56,6 +57,7 @@ public class Landmark_Activity extends AppCompatActivity {
         mQuizButton = findViewById(R.id.quiz_button);
         mQuizButton.setVisibility(View.INVISIBLE);
         mCheckLocationButton = findViewById(R.id.check_location_button);
+        mUploadButton = findViewById(R.id.upload_button);
     }
 
     private void loadImageFromURL(String URL){
@@ -90,6 +92,15 @@ public class Landmark_Activity extends AppCompatActivity {
                     Intent intent = new Intent(context.get().getApplicationContext(), Questions_Activity.class);
                     intent.putExtra("LandmarkId", mLandmarkId);
                     intent.putExtra("RouteId", mRouteId);
+                    context.get().startActivity(intent);
+                }
+            });
+
+            mUploadButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(context.get().getApplicationContext(), Upload_Activity.class);
+                    intent.putExtra("LandmarkId", mLandmarkId);
                     context.get().startActivity(intent);
                 }
             });

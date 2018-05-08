@@ -1,11 +1,14 @@
 const express    = require('express');
+const fileUpload = require('express-fileupload');
 const app        = express();
 const bodyParser = require('body-parser');
 const morgan  	 = require('morgan');
-const path = require('path')
+const path       = require('path')
+const fs         = require('fs');
 morgan(':method :url :status :res[content-length] - :response-time ms')
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(fileUpload());
 const api = require('./api');
 const config = api.config;
 const client = api.client;

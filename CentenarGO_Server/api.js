@@ -1,4 +1,7 @@
 const express    = require('express');
+const fs         = require('fs');
+const uuidv1     = require('uuid/v1')
+const base64Img = require('base64-img');
 const config = require('./config');
 const { Client } = require('pg');
 const client = new Client({
@@ -15,8 +18,9 @@ const bcrypt = require('bcrypt');
 
 const router = express.Router(); 
 
-const path = require('path')
-const dir = path.join(__dirname, 'public')
+const path = require('path');
+const dir = path.join(__dirname, 'public');
+const images = path.join(__dirname, 'images');
 
 const errorCatcher = fn => (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next); 
@@ -36,7 +40,6 @@ router.post('/signup', errorCatcher(async (req, res) => {
 	/*await client.query(`INSERT INTO userroutes (routeid, datecompleted, currentlandmark, userid)
 						VALUES (1, null, 1, $1::uuid)`,
 						[result.rows[0].id])*/
-
     res.sendStatus(200);
 }));
 
@@ -188,6 +191,19 @@ router.post('/landmark', errorCatcher(async (req, res, next) => {
     res.status(200).json({landmark: landmark, image: landmark.name + '.jpg'});
 }));
 
+router.post('/landmark/:landmarkId/upload', errorCatcher(async (req, res, next) => {
+    var imageFile = req.body.image;
+
+    imageName = uuidv1();
+    base64Img.img('data:image/png;base64,' + imageFile, "./images", req.body.landmarkId + imageName, function(err) {
+    if (err)
+      return res.status(500).send(err);
+ 
+    res.status(201).send('File uploaded!');
+  });
+}));
+
+router.use(express.static(images));
 
 router.post('/landmarkContent/:landmarkId', errorCatcher(async (req, res, next) => {
     /**
