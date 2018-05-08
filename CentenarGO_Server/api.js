@@ -374,6 +374,16 @@ router.post('/landmark/:landmarkId/questions/validate-answers', errorCatcher(asy
     res.status(200).json({'correct': correct});
 }));
 
+router.post('/images', errorCatcher(async (req, res, next) => {
+    /**
+     * Trimite toate imaginile.
+     */
+    const { rows } = await client.query(`SELECT i.id, i.title, i.path, u.username
+                                         FROM images i
+                                         JOIN users u ON i.userid = u.id`);
+    res.status(200).json({images: rows});
+}));
+
 router.use((err, req, res, next) => {
     console.error(err);
     client.query('ROLLBACK')
