@@ -22,16 +22,19 @@
             android:value="@string/google_maps_key" />
 
         <activity android:name=".activities.Login_Activity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+
         </activity>
         <activity android:name=".activities.Register_Activity" android:windowSoftInputMode="stateVisible|adjustResize" />
         <activity android:name=".activities.Routes_Activity" />
         <activity android:name=".activities.Route_Activity" />
         <activity android:name=".activities.Landmark_Activity" />
         <activity android:name=".activities.Questions_Activity" />
+        <activity android:name=".activities.Gallery_Activity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

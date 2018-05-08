@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/gallery_image_layout"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/gallery_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxWidth="100dp"
+        android:maxHeight="200dp"
+        android:adjustViewBounds="true"/>
+
+</LinearLayout>
