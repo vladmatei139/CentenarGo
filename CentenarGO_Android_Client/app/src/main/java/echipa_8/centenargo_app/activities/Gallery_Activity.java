@@ -1,5 +1,6 @@
 package echipa_8.centenargo_app.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.util.Pair;
@@ -33,10 +34,20 @@ import echipa_8.centenargo_app.utilities.MapUtility;
 
 public class Gallery_Activity extends AppCompatActivity {
 
+    private String token;
+    Toolbar mActionBarToolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery_);
+        Intent intent = getIntent();
+//        token = intent.getStringExtra("token");
+        token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMyNmFlZTFlLTMwMzUtNDU5Ni1iMTg0LTJiNTY3Y2IyYjFhNCIsImlhdCI6MTUyNTgwMzMwNCwiZXhwIjoxNTI1ODQ2NTA0fQ.44gNDWBl-1TJ0NdrXmFnhy1VtD6k2wnDWuwczmcFfoc";
+
+        mActionBarToolbar = findViewById(R.id.toolbar_route);
+        mActionBarToolbar.setTitle(R.string.app_name);
+        setSupportActionBar(mActionBarToolbar);
 
         List<Map<String, Object>> images = new ArrayList<>();
         RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -44,38 +55,40 @@ public class Gallery_Activity extends AppCompatActivity {
         RecyclerView galleryView = findViewById(R.id.gallery_recycler_view);
         RecyclerView.LayoutManager galleryLayoutManager = new StaggeredGridLayoutManager(3, 1);
         galleryView.setLayoutManager(galleryLayoutManager);
-        RecyclerView.Adapter galleryAdapter = new RecyclerViewImageGalleryAdapter(images, LayoutInflater.from(this));
+        RecyclerView.Adapter galleryAdapter = new RecyclerViewImageGalleryAdapter(this, images);
         galleryView.setAdapter(galleryAdapter);
 
         JSONObject requestObject = new JSONObject();
         try {
-            requestObject.put("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMyNmFlZTFlLTMwMzUtNDU5Ni1iMTg0LTJiNTY3Y2IyYjFhNCIsImlhdCI6MTUyNTc4Njg4MywiZXhwIjoxNTI1ODMwMDgzfQ.LT9SxIf7TyTfhfmjOU7EhDOdL6I594CdWiXov82K84I");
-        } catch (JSONException e) {
+            requestObject.put("token", token);
+            JsonObjectRequest request = new JsonObjectRequest(
+                    Request.Method.POST,
+                    "http://10.0.2.2:8080/api/images/",
+                    requestObject,
+                    response -> {
+                        try {
+                            JSONArray arr = response.getJSONArray("images");
+                            for (int i = 0; i < arr.length(); i++) {
+                                JSONObject obj = arr.getJSONObject(i);
+                                images.add(createMap(
+                                        "id", obj.get("id"),
+                                        "path", obj.get("path"),
+                                        "title", obj.get("title"),
+                                        "username", obj.get("username")));
+                            }
+                            galleryAdapter.notifyDataSetChanged();
+                        }
+                        catch (JSONException jsone) {
+                            Log.println(Log.ERROR, "JSONError", "Error creating JSON array from JSONObject response: " + jsone.getMessage());
+                        }
+                    },
+                    error -> Log.println(Log.ERROR, "ImageError", "Volley request for /api/images/ failed: " + error.getMessage())
+            );
+            requestQueue.add(request);
+        }
+        catch (JSONException e) {
             e.printStackTrace();
         }
-        JsonObjectRequest request = new JsonObjectRequest(
-                Request.Method.POST,
-                "http://10.0.2.2:8080/api/images/",
-                requestObject,
-                response -> {
-                    try {
-                        JSONArray arr = response.getJSONArray("images");
-                        for (int i = 0; i < arr.length(); i++) {
-                            JSONObject obj = arr.getJSONObject(i);
-                            images.add(createMap(
-                                    "id", obj.get("id"),
-                                    "path", obj.get("path"),
-                                    "title", obj.get("title")));
-                        }
-                        galleryAdapter.notifyDataSetChanged();
-                    }
-                    catch (JSONException jsone) {
-                        Log.println(Log.ERROR, "JSONError", "Error creating JSON array from JSONObject response: " + jsone.getMessage());
-                    }
-                },
-                error -> Log.println(Log.ERROR, "ImageError", "Volley request for /api/images/ failed: " + error.getMessage())
-        );
-        requestQueue.add(request);
     }
 
     private Map<String, Object> createMap (Object... objects) {
