@@ -32,7 +32,7 @@ public class LandmarkContent_Service extends AsyncTask<String, String, Object> {
     @Override
     protected Object doInBackground(String... strings) {
         try {
-            URL url = new URL("http://10.0.2.2:8080/api/landmarkContent/" + strings[0]);
+            URL url = new URL("http://192.168.1.4:8080/api/landmarkContent/" + strings[0]);
 
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("POST");
