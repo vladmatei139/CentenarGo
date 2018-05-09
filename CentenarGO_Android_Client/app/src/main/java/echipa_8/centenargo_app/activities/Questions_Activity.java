@@ -1,31 +1,26 @@
 package echipa_8.centenargo_app.activities;
 
-import android.app.ActionBar;
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Pair;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +36,62 @@ public class Questions_Activity extends AppCompatActivity {
     Integer routeId;
     Integer landmarkId;
 
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mToggle;
+
+    private void setNavigationBar() {
+        mDrawerLayout = (DrawerLayout)findViewById(R.id.questions_drawer);
+        mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
+        mDrawerLayout.addDrawerListener(mToggle);
+        mToggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        NavigationView navigationView = findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(item -> {
+            Intent intent;
+            switch (item.getItemId()){
+                case R.id.menu_gallery:
+                    intent = new Intent(this.getApplicationContext(), Gallery_Activity.class);
+                    this.startActivity(intent);
+                    return true;
+
+                case R.id.menu_routes:
+                    intent = new Intent(this.getApplicationContext(), Routes_Activity.class);
+                    this.startActivity(intent);
+                    return true;
+
+                case R.id.menu_sign_off:
+                    Toast.makeText(this, "You've been logged out", Toast.LENGTH_SHORT).show();
+                    intent = new Intent(getApplicationContext(), Login_Activity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    return true;
+
+                case R.id.menu_tutorial:
+                    // todo: Start Tutorial intent
+                    return true;
+
+                case R.id.menu_stats:
+                    // todo: Start Statistics intent
+                    return true;
+
+                default:
+                    return true;
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if(mToggle.onOptionsItemSelected(item)){
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +104,8 @@ public class Questions_Activity extends AppCompatActivity {
         mActionBarToolbar = findViewById(R.id.toolbar_questions);
         mActionBarToolbar.setTitle("CentenarGo");
         setSupportActionBar(mActionBarToolbar);
+
+        setNavigationBar();
 
         Questions_Service questions_service = new Questions_Service(this);
         questions_service.execute(Integer.toString(landmarkId), Integer.toString(routeId));

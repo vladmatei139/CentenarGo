@@ -3,7 +3,10 @@ package echipa_8.centenargo_app.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.util.Pair;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,6 +39,9 @@ public class Route_Activity extends AppCompatActivity implements OnMapReadyCallb
     private GoogleMap mMap;
 
     Toolbar mActionBarToolbar;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mToggle;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +53,7 @@ public class Route_Activity extends AppCompatActivity implements OnMapReadyCallb
         mActionBarToolbar = findViewById(R.id.toolbar_route);
         mActionBarToolbar.setTitle(R.string.app_name);
         setSupportActionBar(mActionBarToolbar);
+        setNavigationBar();
 
         Route_Service route_service = new Route_Service(this);
         route_service.execute(mRoute.toString());
@@ -63,15 +70,11 @@ public class Route_Activity extends AppCompatActivity implements OnMapReadyCallb
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                Intent intent = new Intent(getApplicationContext(), Routes_Activity.class);
-                startActivity(intent);
-                return true;
-            default:
-                Toast.makeText(getApplicationContext(), "Unknown command", Toast.LENGTH_LONG).show();
-                return true;
+
+        if(mToggle.onOptionsItemSelected(item)){
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     public void setLandmarks(String response) {
@@ -129,4 +132,49 @@ public class Route_Activity extends AppCompatActivity implements OnMapReadyCallb
         if (MapUtility.requestPermission(requestCode, permissions, grantResults))
             initMap();
     }
+
+
+    private void setNavigationBar() {
+        mDrawerLayout = (DrawerLayout)findViewById(R.id.route_drawer);
+        mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
+        mDrawerLayout.addDrawerListener(mToggle);
+        mToggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        NavigationView navigationView = findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(item -> {
+            Intent intent;
+            switch (item.getItemId()){
+                case R.id.menu_gallery:
+                    intent = new Intent(this.getApplicationContext(), Gallery_Activity.class);
+                    this.startActivity(intent);
+                    return true;
+
+                case R.id.menu_routes:
+                    intent = new Intent(this.getApplicationContext(), Routes_Activity.class);
+                    this.startActivity(intent);
+                    return true;
+
+                case R.id.menu_sign_off:
+                    Toast.makeText(this, "You've been logged out", Toast.LENGTH_SHORT).show();
+                    intent = new Intent(getApplicationContext(), Login_Activity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    return true;
+
+                case R.id.menu_tutorial:
+                    // todo: Start Tutorial intent
+                    return true;
+
+                case R.id.menu_stats:
+                    // todo: Start Statistics intent
+                    return true;
+
+                default:
+                    return true;
+            }
+        });
+
+    }
+
 }

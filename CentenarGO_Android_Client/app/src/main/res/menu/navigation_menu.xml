@@ -1,0 +1,38 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+
+    <item
+        android:id="@+id/menu_routes"
+        android:icon="@mipmap/baseline_account_balance_black_18dp"
+        android:title="@string/appSettings"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_gallery"
+        android:icon="@mipmap/baseline_photo_camera_black_18dp"
+        android:title="Gallery"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menu_stats"
+        android:icon="@mipmap/baseline_account_circle_black_18dp"
+        android:title="Stats"
+        app:showAsAction="never"/>
+
+     <item
+         android:id="@+id/menu_tutorial"
+         android:icon="@mipmap/baseline_device_unknown_black_18dp"
+         android:title="Tutorial"
+         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menu_sign_off"
+        android:icon="@mipmap/baseline_exit_to_app_black_18dp"
+        android:title="Sign out"
+        app:showAsAction="never"/>
+
+
+
+</menu>
