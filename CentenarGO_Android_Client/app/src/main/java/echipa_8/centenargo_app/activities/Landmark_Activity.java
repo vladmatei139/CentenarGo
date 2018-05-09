@@ -18,8 +18,10 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 
 import echipa_8.centenargo_app.R;
+import echipa_8.centenargo_app.services.CheckLocation_Service;
 import echipa_8.centenargo_app.services.LandmarkContent_Service;
 import echipa_8.centenargo_app.services.Landmark_Service;
+import echipa_8.centenargo_app.services.ValidateCheck_Service;
 import echipa_8.centenargo_app.utilities.MapUtility;
 import echipa_8.centenargo_app.utilities.SharedPreferencesUtility;
 
@@ -48,6 +50,8 @@ public class Landmark_Activity extends AppCompatActivity {
 
         linkFields();
 
+        ValidateCheck_Service validateCheck_service = new ValidateCheck_Service(this);
+        validateCheck_service.execute(mLandmarkId.toString(), mRouteId.toString());
     }
 
     private void linkFields(){
@@ -55,10 +59,11 @@ public class Landmark_Activity extends AppCompatActivity {
         mLandmarkTitle = findViewById(R.id.landmark_title);
         mLandmarkDescription = findViewById(R.id.landmark_description);
         mQuizButton = findViewById(R.id.quiz_button);
-        mQuizButton.setVisibility(View.INVISIBLE);
+        mQuizButton.setVisibility(View.GONE);
         mCheckLocationButton = findViewById(R.id.check_location_button);
+        mCheckLocationButton.setVisibility(View.GONE);
         mUploadButton = findViewById(R.id.upload_button);
-        mUploadButton.setVisibility(View.INVISIBLE);
+        mUploadButton.setVisibility(View.GONE);
     }
 
     private void loadImageFromURL(String URL){
@@ -78,7 +83,7 @@ public class Landmark_Activity extends AppCompatActivity {
             final double longitude = infoJSON.getDouble("longitude");
             String imgName = json.getString("image");
 
-            loadImageFromURL("http://192.168.1.4:8080/" + imgName);
+            loadImageFromURL("http://10.0.2.2:8080/" + imgName);
 
             mLandmarkTitle.setText(title);
             mLandmarkDescription.setText(content);
@@ -132,6 +137,9 @@ public class Landmark_Activity extends AppCompatActivity {
         if (proximity) {
             mQuizButton.setVisibility(View.VISIBLE);
             mUploadButton.setVisibility(View.VISIBLE);
+            mCheckLocationButton.setVisibility(View.GONE);
+            CheckLocation_Service checkLocation_service = new CheckLocation_Service();
+            checkLocation_service.execute(mLandmarkId.toString(), mRouteId.toString());
             LandmarkContent_Service landmarkContent_service = new LandmarkContent_Service(this);
             landmarkContent_service.execute(mLandmarkId.toString());
         }
@@ -141,5 +149,18 @@ public class Landmark_Activity extends AppCompatActivity {
 
     public void setContent(String content) {
         mLandmarkDescription.setText(content);
+    }
+
+    public void validateCheck(Boolean o) {
+        if (o != null && !o) {
+            mCheckLocationButton.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            mQuizButton.setVisibility(View.VISIBLE);
+            mUploadButton.setVisibility(View.VISIBLE);
+            LandmarkContent_Service landmarkContent_service = new LandmarkContent_Service(this);
+            landmarkContent_service.execute(mLandmarkId.toString());
+        }
     }
 }

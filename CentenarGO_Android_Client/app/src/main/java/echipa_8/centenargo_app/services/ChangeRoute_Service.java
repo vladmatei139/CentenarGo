@@ -6,10 +6,8 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -35,7 +33,7 @@ public class ChangeRoute_Service extends AsyncTask<String, String, Object> {
         try {
             String token = SharedPreferencesUtility.getToken();
 
-            URL url = new URL("http://192.168.1.4:8080/api/route/change/" + strings[0]);
+            URL url = new URL("http://10.0.2.2:8080/api/route/change/" + strings[0]);
 
             HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
             httpURLConnection.setRequestMethod("POST");

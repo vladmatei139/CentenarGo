@@ -15,18 +15,19 @@ import java.net.URL;
 import echipa_8.centenargo_app.activities.Questions_Activity;
 import echipa_8.centenargo_app.utilities.SharedPreferencesUtility;
 
-public class Answers_Service extends AsyncTask<String, String, Object> {
+/**
+ * Created by A6I3M2 on 09-May-18.
+ */
 
-    private WeakReference<Questions_Activity> questions_activity;
+public class CheckLocation_Service extends AsyncTask<String, String, Object> {
 
-    public Answers_Service(final Questions_Activity questions_activity) {
-        this.questions_activity = new WeakReference<>(questions_activity);
+    public CheckLocation_Service() {
     }
 
     @Override
     protected Object doInBackground (String... strings) {
         try {
-            URL url = new URL("http://10.0.2.2:8080/api/landmark/" + strings[0] + "/questions/validate-answers/");
+            URL url = new URL("http://10.0.2.2:8080/api/landmark/" + strings[0] + "/checklocation");
 
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("POST");
@@ -38,8 +39,7 @@ public class Answers_Service extends AsyncTask<String, String, Object> {
             String token = SharedPreferencesUtility.getToken();
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("token", token);
-            jsonObject.put("answers", new JSONArray(strings[1]));
-            jsonObject.put("routeId", strings[2]);
+            jsonObject.put("routeId", strings[1]);
 
             DataOutputStream dos = new DataOutputStream(httpURLConnection.getOutputStream());
             dos.writeBytes(jsonObject.toString());
@@ -49,18 +49,7 @@ public class Answers_Service extends AsyncTask<String, String, Object> {
             Integer replyCode = httpURLConnection.getResponseCode();
             String replyMessage = httpURLConnection.getResponseMessage();
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-            in.close();
-
-            JSONObject json = new JSONObject(response.toString());
-            Boolean result = (Boolean) json.get("correct");
-
-            return result;
+            return replyCode;
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -71,6 +60,5 @@ public class Answers_Service extends AsyncTask<String, String, Object> {
     @Override
     protected void onPostExecute (Object o) {
         super.onPostExecute(o);
-        questions_activity.get().switchToRoute((Boolean) o);
     }
 }

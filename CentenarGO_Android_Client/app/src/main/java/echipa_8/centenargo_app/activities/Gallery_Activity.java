@@ -31,6 +31,7 @@ import echipa_8.centenargo_app.R;
 import echipa_8.centenargo_app.adapters.RecycleViewLandmarkAdapter;
 import echipa_8.centenargo_app.adapters.RecyclerViewImageGalleryAdapter;
 import echipa_8.centenargo_app.utilities.MapUtility;
+import echipa_8.centenargo_app.utilities.SharedPreferencesUtility;
 
 public class Gallery_Activity extends AppCompatActivity {
 
@@ -41,10 +42,7 @@ public class Gallery_Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery_);
-        Intent intent = getIntent();
-        token = intent.getStringExtra("token");
-//        token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMyNmFlZTFlLTMwMzUtNDU5Ni1iMTg0LTJiNTY3Y2IyYjFhNCIsImlhdCI6MTUyNTgwMzMwNCwiZXhwIjoxNTI1ODQ2NTA0fQ.44gNDWBl-1TJ0NdrXmFnhy1VtD6k2wnDWuwczmcFfoc";
-
+        token = SharedPreferencesUtility.getToken();
         mActionBarToolbar = findViewById(R.id.toolbar_route);
         mActionBarToolbar.setTitle(R.string.app_name);
         setSupportActionBar(mActionBarToolbar);
@@ -63,7 +61,7 @@ public class Gallery_Activity extends AppCompatActivity {
             requestObject.put("token", token);
             JsonObjectRequest request = new JsonObjectRequest(
                     Request.Method.POST,
-                    "http://192.168.1.4:8080/api/images/",
+                    "http://10.0.2.2:8080/api/images/",
                     requestObject,
                     response -> {
                         try {
@@ -74,7 +72,8 @@ public class Gallery_Activity extends AppCompatActivity {
                                         "id", obj.get("id"),
                                         "path", obj.get("path"),
                                         "title", obj.get("title"),
-                                        "username", obj.get("username")));
+                                        "username", obj.get("username"),
+                                        "likes", obj.get("likes")));
                             }
                             galleryAdapter.notifyDataSetChanged();
                         }

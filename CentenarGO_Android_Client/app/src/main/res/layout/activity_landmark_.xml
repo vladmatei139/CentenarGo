@@ -56,6 +56,20 @@
         android:text="Upload Image"
         />
 
+    <Button
+        android:id="@+id/check_location_button"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Check Location" />
+
+    <Button
+        android:id="@+id/quiz_button"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Quiz" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -65,22 +79,7 @@
         android:orientation="vertical"
         android:paddingBottom="10dp">
 
-        <Button
-            android:id="@+id/check_location_button"
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:text="Check Location" />
 
-        <Button
-            android:id="@+id/quiz_button"
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:text="Quiz"
-            />
-        
-        
     </LinearLayout>
 
 </LinearLayout>

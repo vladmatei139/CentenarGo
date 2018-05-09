@@ -34,7 +34,7 @@ public class Upload_Service extends AsyncTask<String, String, Object> {
     @Override
     protected Object doInBackground(String... strings) {
         try {
-            URL url = new URL("http://192.168.1.4:8080/api/landmark/" + strings[0] + "/upload");
+            URL url = new URL("http://10.0.2.2:8080/api/landmark/" + strings[0] + "/upload");
 
             HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
             httpURLConnection.setRequestMethod("POST");

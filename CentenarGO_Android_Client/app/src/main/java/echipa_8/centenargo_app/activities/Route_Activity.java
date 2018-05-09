@@ -65,7 +65,7 @@ public class Route_Activity extends AppCompatActivity implements OnMapReadyCallb
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                Intent intent = new Intent(getApplicationContext(), Routes_Activity.class);
+                Intent intent = new Intent(getApplicationContext(), Gallery_Activity.class);
                 startActivity(intent);
                 return true;
             default:

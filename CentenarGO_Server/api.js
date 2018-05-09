@@ -292,7 +292,8 @@ router.post('/route/change/:routeId', errorCatcher(async (req, res, next) => {
 											SELECT currentroute
 											FROM userdetails
 											WHERE userid = $1::uuid)
-										AND routeorder = 1)
+										AND routeorder = 1),
+                                                                    locationchecked = FALSE
 								WHERE userid = $1::uuid
 								AND routeid = (
 									SELECT currentroute
@@ -306,7 +307,8 @@ router.post('/route/change/:routeId', errorCatcher(async (req, res, next) => {
 										FROM landmarks
 										WHERE route = $2::int
 										AND routeorder = 1
-									)
+									),
+                                                                    locationchecked = FALSE
 								WHERE userid = $1::uuid
 								AND routeid = $2::int
 								AND datecompleted IS NULL`, [req.id, req.params.routeId]);
@@ -367,7 +369,7 @@ router.post('/landmark/:landmarkId/questions/validate-answers', errorCatcher(asy
                                         SELECT routeorder
                                         FROM landmarks
                                         WHERE id = ur.currentlandmark)), currentlandmark),
-                                datecompleted = 
+                            datecompleted = 
                                 CASE WHEN (
                                         SELECT routeorder
                                         FROM landmarks
@@ -377,10 +379,57 @@ router.post('/landmark/:landmarkId/questions/validate-answers', errorCatcher(asy
                                         FROM landmarks l
                                         WHERE route = ur.routeid
                                 ) THEN now()
-                                ELSE NULL END
+                                ELSE NULL END,
+                            locationchecked = FALSE    
                         WHERE userid = $1::uuid
-                        AND routeid = $2::int`, [req.id, req.body.routeId]);
+                        AND routeid = $2::int
+                        AND currentLandmark = $3::int`, [req.id, req.body.routeId, req.params.landmarkId]);
     }
+    res.status(200).json({'correct': correct});
+}));
+
+router.post('/landmark/:landmarkId/validateCheck', errorCatcher(async (req, res, next) => {
+
+    const { rows } = await client.query(`SELECT 1
+                                         FROM userroutes ur
+                                         WHERE userid = $1::uuid
+                                         AND routeid = $2::int
+                                         AND ((SELECT routeOrder
+                                           FROM landmarks
+                                           WHERE id = $3::int) < (SELECT routeOrder
+                                           FROM landmarks
+                                           WHERE id = ur.currentlandmark)
+                                             OR (currentlandmark = $3::int 
+                                               AND locationchecked = TRUE))`, [req.id, req.body.routeId, req.params.landmarkId]);
+    correct = (rows.length != 0);
+    res.status(200).json({'correct': correct});
+}));
+
+router.post('/landmark/:landmarkId/checklocation', errorCatcher(async (req, res, next) => {
+
+        await client.query(`UPDATE userroutes ur
+                        SET locationchecked = TRUE    
+                        WHERE userid = $1::uuid
+                        AND routeid = $2::int
+                        AND currentLandmark = $3::int`, [req.id, req.body.routeId, req.params.landmarkId]);
+    res.status(200);
+}));
+
+router.post('/gallery/:imageId/addLike', errorCatcher(async (req, res, next) => {
+
+    await client.query(`INSERT INTO likes
+                        VALUES ($1::uuid, $2::int)`, [req.id, req.params.imageId]);
+    await client.query('COMMIT');
+    res.status(200);
+}));
+
+router.post('/gallery/:imageId/checkLiked', errorCatcher(async (req, res, next) => {
+
+    const { rows } = await client.query(`SELECT 1
+                                         FROM likes
+                                         WHERE userid = $1::uuid
+                                         AND imageid = $2::int`, [req.id, req.params.imageId]);
+    correct = (rows.length != 0);
     res.status(200).json({'correct': correct});
 }));
 
@@ -388,9 +437,11 @@ router.post('/images', errorCatcher(async (req, res, next) => {
     /**
      * Trimite toate imaginile.
      */
-    const { rows } = await client.query(`SELECT i.id, i.title, i.path, u.username
+    const { rows } = await client.query(`SELECT i.id, i.title, i.path, u.username, count(l.imageid) as likes
                                          FROM images i
-                                         JOIN users u ON i.userid = u.id`);
+                                         JOIN users u ON i.userid = u.id
+                                         LEFT JOIN likes l ON l.imageid = i.id
+                                         GROUP BY i.id, i.title, i.path, u.username`);
     res.status(200).json({images: rows});
 }));
 
