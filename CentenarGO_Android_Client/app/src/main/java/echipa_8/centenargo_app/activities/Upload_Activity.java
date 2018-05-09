@@ -77,9 +77,12 @@ public class Upload_Activity extends AppCompatActivity {
             Bitmap bitmap;
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
-                img.setImageBitmap(bitmap);
+                Bitmap bitmap2 = bitmap.copy(Bitmap.Config.RGB_565, true);
                 upload.setVisibility(View.VISIBLE);
-                b64img = getEncoded64ImageStringFromBitmap(bitmap);
+                bitmap2 = Bitmap.createScaledBitmap(bitmap2, 1280, 720, true);
+                //bitmap2.reconfigure(400,240,Bitmap.Config.RGB_565);
+                img.setImageBitmap(bitmap2);
+                b64img = getEncoded64ImageStringFromBitmap(bitmap2);
             } catch (FileNotFoundException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -92,7 +95,7 @@ public class Upload_Activity extends AppCompatActivity {
 
     public String getEncoded64ImageStringFromBitmap(Bitmap bitmap) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, stream);
         byte[] byteFormat = stream.toByteArray();
         // get the base 64 string
         String imgString = Base64.encodeToString(byteFormat, Base64.NO_WRAP);

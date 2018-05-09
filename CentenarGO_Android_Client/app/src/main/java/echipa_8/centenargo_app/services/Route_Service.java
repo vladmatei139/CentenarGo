@@ -37,7 +37,7 @@ public class Route_Service extends AsyncTask<String, String, Object> {
         try {
             String token = SharedPreferencesUtility.getToken();
 
-            URL url = new URL("http://10.0.2.2:8080/api/routeLoad/" + strings[0]);
+            URL url = new URL("http://192.168.1.4:8080/api/routeLoad/" + strings[0]);
 
             HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
             httpURLConnection.setRequestMethod("POST");

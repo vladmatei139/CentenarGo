@@ -31,7 +31,7 @@ public class Image_Activity extends AppCompatActivity {
         FrameLayout layout = findViewById(R.id.image_frame_layout);
         ImageView imageView = findViewById(R.id.image_image);
         Picasso.get()
-                .load("http://10.0.2.2:8080/" + path)
+                .load("http://192.168.1.4:8080/" + path)
                 .placeholder(R.drawable.placeholder_image_square)
                 .into(imageView);
 
