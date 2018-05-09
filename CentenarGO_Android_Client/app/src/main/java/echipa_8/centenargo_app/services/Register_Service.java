@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -18,6 +19,13 @@ import java.net.URL;
  */
 
 public class Register_Service extends AsyncTask<String, String, Object> {
+
+    private WeakReference<Register_Activity> register_activity;
+
+    public Register_Service(final Register_Activity register_activity) {
+        this.register_activity = new WeakReference<>(register_activity);
+    }
+
     @Override
     protected Object doInBackground(String... strings) {
         try {
@@ -66,10 +74,6 @@ public class Register_Service extends AsyncTask<String, String, Object> {
     @Override
     protected void onPostExecute(Object o) {
         super.onPostExecute(o);
-        if(o == null){
-            Register_Activity.setResponse(null);
-        } else {
-            Register_Activity.setResponse(o.toString());
-        }
+        this.register_activity.get().checkRegister(null == o ? null : o.toString());
     }
 }

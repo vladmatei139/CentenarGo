@@ -56,7 +56,7 @@ public class Login_Activity extends AppCompatActivity {
     public void loginComplete(String response){
         if(null != response){
             toast("SUCCESS");
-            Intent intent = new Intent(getApplicationContext(), Routes_Activity.class);
+            Intent intent = new Intent(getApplicationContext(), Intro_Activity.class);
             startActivity(intent);
             finish();
         } else {
