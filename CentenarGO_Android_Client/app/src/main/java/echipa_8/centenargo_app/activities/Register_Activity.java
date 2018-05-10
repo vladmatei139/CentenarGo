@@ -49,7 +49,7 @@ public class Register_Activity extends AppCompatActivity {
             toast("Password is required");
             return;
         }
-        
+
         Register_Service register_service = new Register_Service(this);
         register_service.execute(email, username, password, firstName, lastName);
     }

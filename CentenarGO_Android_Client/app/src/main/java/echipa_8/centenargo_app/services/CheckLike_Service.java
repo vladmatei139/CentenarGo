@@ -2,7 +2,6 @@ package echipa_8.centenargo_app.services;
 
 import android.os.AsyncTask;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -12,21 +11,25 @@ import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import echipa_8.centenargo_app.activities.Questions_Activity;
+import echipa_8.centenargo_app.activities.Image_Activity;
+import echipa_8.centenargo_app.activities.Landmark_Activity;
 import echipa_8.centenargo_app.utilities.SharedPreferencesUtility;
 
-public class Answers_Service extends AsyncTask<String, String, Object> {
+/**
+ * Created by A6I3M2 on 10-May-18.
+ */
 
-    private WeakReference<Questions_Activity> questions_activity;
+public class CheckLike_Service extends AsyncTask<String, String, Object> {
 
-    public Answers_Service(final Questions_Activity questions_activity) {
-        this.questions_activity = new WeakReference<>(questions_activity);
+    private WeakReference<Image_Activity> image_activity;
+
+    public CheckLike_Service(final Image_Activity image_activity) {
+        this.image_activity = new WeakReference<>(image_activity);
     }
-
     @Override
     protected Object doInBackground (String... strings) {
         try {
-            URL url = new URL("http://10.0.2.2:8080/api/landmark/" + strings[0] + "/questions/validate-answers/");
+            URL url = new URL("http://10.0.2.2:8080/api/gallery/" + strings[0] + "/checkLiked");
 
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("POST");
@@ -38,8 +41,6 @@ public class Answers_Service extends AsyncTask<String, String, Object> {
             String token = SharedPreferencesUtility.getToken();
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("token", token);
-            jsonObject.put("answers", new JSONArray(strings[1]));
-            jsonObject.put("routeId", strings[2]);
 
             DataOutputStream dos = new DataOutputStream(httpURLConnection.getOutputStream());
             dos.writeBytes(jsonObject.toString());
@@ -71,6 +72,8 @@ public class Answers_Service extends AsyncTask<String, String, Object> {
     @Override
     protected void onPostExecute (Object o) {
         super.onPostExecute(o);
-        questions_activity.get().switchToRoute((Boolean) o);
+        image_activity.get().validateCheck((Boolean) o);
     }
 }
+
+

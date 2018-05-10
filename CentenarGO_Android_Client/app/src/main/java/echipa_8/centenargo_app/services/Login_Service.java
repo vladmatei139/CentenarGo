@@ -35,7 +35,10 @@ public class Login_Service extends AsyncTask<String, String, Object> {
     @Override
     protected Object doInBackground(String... strings) {
         try {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2439c3475512d04437f97e2399f3bedde85f4aa6
             URL url = new URL("http://10.0.2.2:8080/api/login");
 
             HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();

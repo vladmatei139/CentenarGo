@@ -30,6 +30,10 @@ import java.util.Map;
 
 import echipa_8.centenargo_app.R;
 import echipa_8.centenargo_app.adapters.RecyclerViewImageGalleryAdapter;
+<<<<<<< HEAD
+=======
+import echipa_8.centenargo_app.utilities.MapUtility;
+>>>>>>> 2439c3475512d04437f97e2399f3bedde85f4aa6
 import echipa_8.centenargo_app.utilities.SharedPreferencesUtility;
 
 public class Gallery_Activity extends AppCompatActivity {
@@ -90,6 +94,7 @@ public class Gallery_Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery_);
+<<<<<<< HEAD
 
         Intent intent = getIntent();
         //token = intent.getStringExtra("token");
@@ -98,6 +103,10 @@ public class Gallery_Activity extends AppCompatActivity {
         String token = SharedPreferencesUtility.getToken();
 
         mActionBarToolbar = findViewById(R.id.toolbar_gallery);
+=======
+        token = SharedPreferencesUtility.getToken();
+        mActionBarToolbar = findViewById(R.id.toolbar_route);
+>>>>>>> 2439c3475512d04437f97e2399f3bedde85f4aa6
         mActionBarToolbar.setTitle(R.string.app_name);
         setSupportActionBar(mActionBarToolbar);
 
@@ -128,7 +137,8 @@ public class Gallery_Activity extends AppCompatActivity {
                                         "id", obj.get("id"),
                                         "path", obj.get("path"),
                                         "title", obj.get("title"),
-                                        "username", obj.get("username")));
+                                        "username", obj.get("username"),
+                                        "likes", obj.get("likes")));
                             }
                             galleryAdapter.notifyDataSetChanged();
                         }

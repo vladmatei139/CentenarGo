@@ -24,7 +24,6 @@
             android:minHeight="?attr/actionBarSize"
             android:theme="?attr/actionBarTheme" />
 
-
         <com.master.glideimageview.GlideImageView
             android:id="@+id/landmark_image_view"
             android:layout_width="match_parent"
@@ -103,10 +102,7 @@
 
 
         </LinearLayout>
-
     </LinearLayout>
-
-
     <android.support.design.widget.NavigationView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
