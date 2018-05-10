@@ -49,6 +49,7 @@ public class Upload_Service extends AsyncTask<String, String, Object> {
             jsonObject.put("token", token);
             jsonObject.put("landmarkId", strings[0]);
             jsonObject.put("image",strings[1]);
+            jsonObject.put("title",strings[2]);
 
             DataOutputStream dos = new DataOutputStream(httpURLConnection.getOutputStream());
             dos.writeBytes(jsonObject.toString());

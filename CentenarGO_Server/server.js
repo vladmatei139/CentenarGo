@@ -17,6 +17,9 @@ const bcrypt = api.bcrypt;
 const dir = path.join(__dirname, 'public')
 app.use(express.static(dir));
 
+const images = path.join(__dirname, 'images')
+app.use(express.static(images));
+
 app.use(morgan(':date[web]\t:method\t:url\t:remote-addr\tStatus :status\t:response-time ms'));
 app.use('/api', api.router);
 app.use((req, res) => {

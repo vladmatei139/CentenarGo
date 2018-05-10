@@ -126,7 +126,7 @@ public class Landmark_Activity extends AppCompatActivity {
         mCheckLocationButton = findViewById(R.id.check_location_button);
         mCheckLocationButton.setVisibility(View.GONE);
         mUploadButton = findViewById(R.id.upload_button);
-        mUploadButton.setVisibility(View.GONE);
+        //mUploadButton.setVisibility(View.GONE);
     }
 
     private void loadImageFromURL(String URL){

@@ -15,6 +15,7 @@ import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
@@ -38,6 +39,7 @@ public class Upload_Activity extends AppCompatActivity {
     private final Integer GET_FROM_GALLERY = 1;
     private Upload_Service upload_service;
     private String b64img;
+    private TextView title;
 
     Toolbar mActionBarToolbar;
     private DrawerLayout mDrawerLayout;
@@ -51,6 +53,7 @@ public class Upload_Activity extends AppCompatActivity {
         setContentView(R.layout.activity_upload_);
         mLandmarkId = intent.getIntExtra(getString(R.string.landmark_id_key), 0);
 
+        title = findViewById(R.id.inputTitle);
         img = findViewById(R.id.img);
         imgsel = findViewById(R.id.selimg);
         upload = findViewById(R.id.uploadimg);
@@ -62,8 +65,14 @@ public class Upload_Activity extends AppCompatActivity {
                 GET_FROM_GALLERY));
 
         upload.setOnClickListener(v -> {
-            upload_service.execute(mLandmarkId.toString(), b64img);
-            finish();
+            String titleString = title.getText().toString();
+            if(titleString != ""){
+                upload_service.execute(mLandmarkId.toString(), b64img, titleString);
+                finish();
+            }
+            else{
+                toast("Te rog sa introduci un titlu!");
+            }
         });
 
         mActionBarToolbar = findViewById(R.id.toolbar_upload);

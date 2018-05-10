@@ -212,12 +212,18 @@ router.post('/landmark/:landmarkId/upload', errorCatcher(async (req, res, next) 
     var imageFile = req.body.image;
 
     imageName = uuidv1();
-    base64Img.img('data:image/png;base64,' + imageFile, "./images", req.body.landmarkId + imageName, function(err) {
+    imageName = req.body.landmarkId + imageName;
+    base64Img.img('data:image/png;base64,' + imageFile, "./images", imageName, function(err) {
     if (err)
       return res.status(500).send(err);
+  	});
+    await client.query(`INSERT INTO images(landmarkId, title, path, userid)
+                        VALUES ($1::int, $2::text, $3::text, $4::uuid)
+                        ON CONFLICT DO NOTHING`, [req.body.landmarkId, req.body.title, imageName, req.id]);
+    await client.query('COMMIT');
  
     res.status(201).send('File uploaded!');
-  });
+
 }));
 
 router.use(express.static(images));

@@ -51,7 +51,7 @@ public class RecyclerViewImageGalleryAdapter extends RecyclerView.Adapter<Recycl
     @Override
     public void onBindViewHolder(@NonNull GalleryViewHolder holder, final int position) {
         Picasso.get()
-                .load("http:10.0.2.2:8080/" + images.get(position).getPath())
+                .load("http:10.0.2.2/" + images.get(position).getPath())
                 .error(R.drawable.placeholder_image_square)
                 .placeholder(R.drawable.placeholder_image_square)
                 .into(holder.mImageView);
