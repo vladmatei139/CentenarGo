@@ -2,6 +2,7 @@ package echipa_8.centenargo_app.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,18 +13,20 @@ import android.widget.LinearLayout;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import echipa_8.centenargo_app.R;
 import echipa_8.centenargo_app.activities.Image_Activity;
+import echipa_8.centenargo_app.utilities.Image;
 
 public class RecyclerViewImageGalleryAdapter extends RecyclerView.Adapter<RecyclerViewImageGalleryAdapter.GalleryViewHolder> {
 
     private Context context;
-    private List<Map<String, Object>> images;
+    private ArrayList<Image> images;
 
-    public RecyclerViewImageGalleryAdapter(Context context, List<Map<String, Object>> images) {
+    public RecyclerViewImageGalleryAdapter(Context context, ArrayList<Image> images) {
         this.context = context;
         this.images = images;
     }
@@ -48,20 +51,17 @@ public class RecyclerViewImageGalleryAdapter extends RecyclerView.Adapter<Recycl
     @Override
     public void onBindViewHolder(@NonNull GalleryViewHolder holder, final int position) {
         Picasso.get()
-                .load("http:10.0.2.2:8080/" + images.get(position).get("path"))
+                .load("http:10.0.2.2:8080/" + images.get(position).getPath())
+                .error(R.drawable.placeholder_image_square)
                 .placeholder(R.drawable.placeholder_image_square)
                 .into(holder.mImageView);
         holder.mLinearLayout.setOnClickListener(v -> goToImage(v, position));
     }
 
     private void goToImage(View view, int position) {
-
         Intent intent = new Intent(context, Image_Activity.class);
-        intent.putExtra("imageId", Integer.parseInt(images.get(position).get("id").toString()));
-        intent.putExtra("imageTitle", (String) images.get(position).get("title"));
-        intent.putExtra("imageAuthor", (String) images.get(position).get("username"));
-        intent.putExtra("imagePath", (String) images.get(position).get("path"));
-        intent.putExtra("likes", (String) images.get(position).get("likes"));
+        intent.putParcelableArrayListExtra("images", images);
+        intent.putExtra("position", position);
         context.startActivity(intent);
     }
 

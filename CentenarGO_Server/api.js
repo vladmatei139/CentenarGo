@@ -418,9 +418,19 @@ router.post('/landmark/:landmarkId/checklocation', errorCatcher(async (req, res,
 router.post('/gallery/:imageId/addLike', errorCatcher(async (req, res, next) => {
 
     await client.query(`INSERT INTO likes
-                        VALUES ($1::uuid, $2::int)`, [req.id, req.params.imageId]);
+                        VALUES ($1::uuid, $2::int)
+                        ON CONFLICT DO NOTHING`, [req.id, req.params.imageId]);
     await client.query('COMMIT');
-    res.status(200);
+    res.status(200).json({});
+}));
+
+router.post('/gallery/:imageId/removeLike', errorCatcher(async (req, res, next) => {
+
+    await client.query(`DELETE FROM likes
+                        WHERE userid = $1::uuid
+                        AND imageid = $2::int`, [req.id, req.params.imageId]);
+    await client.query('COMMIT');
+    res.status(200).json({});
 }));
 
 router.post('/gallery/:imageId/checkLiked', errorCatcher(async (req, res, next) => {
@@ -433,15 +443,23 @@ router.post('/gallery/:imageId/checkLiked', errorCatcher(async (req, res, next) 
     res.status(200).json({'correct': correct});
 }));
 
-router.post('/images', errorCatcher(async (req, res, next) => {
+router.post('/gallery/:imageId/likes', errorCatcher(async (req, res, next) => {
+    const { rows } = await client.query(`SELECT COUNT(imageid) AS likes
+                                         FROM likes
+                                         WHERE imageid = $1::int`, [req.params.imageId])
+    res.status(200).json({likes: rows[0].likes});
+}));
+
+router.post('/gallery', errorCatcher(async (req, res, next) => {
     /**
      * Trimite toate imaginile.
      */
-    const { rows } = await client.query(`SELECT i.id, i.title, i.path, u.username, count(l.imageid) as likes
+    const { rows } = await client.query(`SELECT i.id, i.title, i.path, u.username, COUNT(l.imageid) as likes
                                          FROM images i
                                          JOIN users u ON i.userid = u.id
                                          LEFT JOIN likes l ON l.imageid = i.id
-                                         GROUP BY i.id, i.title, i.path, u.username`);
+                                         GROUP BY i.id, i.title, i.path, u.username
+                                         ORDER BY likes DESC`);
     res.status(200).json({images: rows});
 }));
 

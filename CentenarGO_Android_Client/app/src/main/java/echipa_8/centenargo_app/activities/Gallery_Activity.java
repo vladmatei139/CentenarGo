@@ -23,6 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import java.util.Map;
 import echipa_8.centenargo_app.R;
 import echipa_8.centenargo_app.adapters.RecycleViewLandmarkAdapter;
 import echipa_8.centenargo_app.adapters.RecyclerViewImageGalleryAdapter;
+import echipa_8.centenargo_app.utilities.Image;
 import echipa_8.centenargo_app.utilities.MapUtility;
 import echipa_8.centenargo_app.utilities.SharedPreferencesUtility;
 
@@ -47,7 +49,7 @@ public class Gallery_Activity extends AppCompatActivity {
         mActionBarToolbar.setTitle(R.string.app_name);
         setSupportActionBar(mActionBarToolbar);
 
-        List<Map<String, Object>> images = new ArrayList<>();
+        ArrayList<Image> images = new ArrayList<>();
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 
         RecyclerView galleryView = findViewById(R.id.gallery_recycler_view);
@@ -61,19 +63,18 @@ public class Gallery_Activity extends AppCompatActivity {
             requestObject.put("token", token);
             JsonObjectRequest request = new JsonObjectRequest(
                     Request.Method.POST,
-                    "http://10.0.2.2:8080/api/images/",
+                    "http://10.0.2.2:8080/api/gallery/",
                     requestObject,
                     response -> {
                         try {
                             JSONArray arr = response.getJSONArray("images");
                             for (int i = 0; i < arr.length(); i++) {
                                 JSONObject obj = arr.getJSONObject(i);
-                                images.add(createMap(
-                                        "id", obj.get("id"),
-                                        "path", obj.get("path"),
-                                        "title", obj.get("title"),
-                                        "username", obj.get("username"),
-                                        "likes", obj.get("likes")));
+                                images.add(new Image(
+                                        (Integer) obj.get("id"),
+                                        (String) obj.get("title"),
+                                        (String) obj.get("path"),
+                                        (String) obj.get("username")));
                             }
                             galleryAdapter.notifyDataSetChanged();
                         }
@@ -81,7 +82,7 @@ public class Gallery_Activity extends AppCompatActivity {
                             Log.println(Log.ERROR, "JSONError", "Error creating JSON array from JSONObject response: " + jsone.getMessage());
                         }
                     },
-                    error -> Log.println(Log.ERROR, "ImageError", "Volley request for /api/images/ failed: " + error.getMessage())
+                    error -> Log.println(Log.ERROR, "ImageError", "Volley request for /api/gallery/ failed: " + error.getMessage())
             );
             requestQueue.add(request);
         }

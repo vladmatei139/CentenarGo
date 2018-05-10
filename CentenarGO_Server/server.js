@@ -1,3 +1,4 @@
+
 const express    = require('express');
 const fileUpload = require('express-fileupload');
 const app        = express();
@@ -5,7 +6,6 @@ const bodyParser = require('body-parser');
 const morgan  	 = require('morgan');
 const path       = require('path')
 const fs         = require('fs');
-morgan(':method :url :status :res[content-length] - :response-time ms')
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(fileUpload());
@@ -17,6 +17,7 @@ const bcrypt = api.bcrypt;
 const dir = path.join(__dirname, 'public')
 app.use(express.static(dir));
 
+app.use(morgan(':date[web]\t:method\t:url\t:remote-addr\tStatus :status\t:response-time ms'));
 app.use('/api', api.router);
 app.use((req, res) => {
     res.sendStatus(404);

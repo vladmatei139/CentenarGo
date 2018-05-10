@@ -1,69 +1,119 @@
 package echipa_8.centenargo_app.activities;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.github.pwittchen.swipe.library.rx2.SimpleSwipeListener;
+import com.github.pwittchen.swipe.library.rx2.Swipe;
+import com.github.pwittchen.swipe.library.rx2.SwipeListener;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
+
+import java.util.ArrayList;
 
 import echipa_8.centenargo_app.R;
-import echipa_8.centenargo_app.services.CheckLike_Service;
-import echipa_8.centenargo_app.services.Like_Service;
+import echipa_8.centenargo_app.services.ImageService;
+import echipa_8.centenargo_app.utilities.Image;
 
 public class Image_Activity extends AppCompatActivity {
 
-    Button mLikeButton;
+    private ArrayList<Image> images;
+    private int position;
+    private Swipe swipe;
+    private ImageService imageService;
+
+    private FrameLayout layout;
+    private ImageView imageView;
+    private LinearLayout textLayout;
+    private TextView titleView;
+    private TextView authorView;
+    private TextView likesView;
+
+    private GestureDetector gestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_);
         Intent intent = getIntent();
-        final Integer id = intent.getIntExtra("imageId", 0);
-        String title = intent.getStringExtra("imageTitle");
-        String author = intent.getStringExtra("imageAuthor");
-        String path = intent.getStringExtra("imagePath");
-        String likes = intent.getStringExtra("likes");
+        images = intent.getParcelableArrayListExtra("images");
+        position = intent.getIntExtra("position", 0);
+        Image image = images.get(position);
 
-        FrameLayout layout = findViewById(R.id.image_frame_layout);
-        ImageView imageView = findViewById(R.id.image_image);
-        Picasso.get()
-                .load("http://10.0.2.2:8080/" + path)
-                .placeholder(R.drawable.placeholder_image_square)
-                .into(imageView);
+        imageService = new ImageService(this, image.getId());
+        layout = findViewById(R.id.image_frame_layout);
+        imageView = findViewById(R.id.image_image);
+        textLayout = findViewById(R.id.image_text_layout);
+        titleView = findViewById(R.id.image_title);
+        authorView = findViewById(R.id.image_author);
+        likesView = findViewById(R.id.image_likes);
 
-        ((TextView) findViewById(R.id.image_title)).setText(title);
-        ((TextView) findViewById(R.id.image_author)).setText(author);
-        ((TextView) findViewById(R.id.image_likes)).setText(likes);
+        loadImage();
 
-        mLikeButton = (Button) findViewById(R.id.image_like_button);
-        mLikeButton.setVisibility(View.INVISIBLE);
-        CheckLike_Service checkLike_service = new CheckLike_Service(this);
-        checkLike_service.execute(id.toString());
-
-        mLikeButton.setOnClickListener(new View.OnClickListener() {
+        swipe = new Swipe();
+        swipe.setListener(new SimpleSwipeListener() {
             @Override
-            public void onClick(View view) {
-                Like_Service like_service = new Like_Service();
-                like_service.execute(id.toString());
+            public boolean onSwipedLeft(final MotionEvent event) {
+                position = (position + 1) % images.size();
+                loadImage();
+                return false;
+            }
+            @Override
+            public boolean onSwipedRight(final MotionEvent event) {
+                position = position - 1;
+                if (position < 0) {
+                    position = images.size() - 1;
+                }
+                loadImage();
+                return false;
             }
         });
-        LinearLayout textLayout = findViewById(R.id.image_text_layout);
-        layout.setOnClickListener(v -> textLayout.setVisibility(textLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE));
+
+        gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent event) {
+                textLayout.setVisibility(textLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+                return true;
+            }
+            @Override
+            public boolean onDoubleTap(MotionEvent event) {
+                imageService.like(image.getId(), o ->
+                    imageService.getLikes(image.getId(), obj ->
+                            likesView.setText(getString(R.string.imageLikesSuffix, obj.optInt("likes", 0)))));
+                return true;
+            }
+        });
     }
 
-    public void validateCheck(Boolean o) {
-        if (o!=null && !o)
-            mLikeButton.setVisibility(View.VISIBLE);
+    private void loadImage() {
+        Image image = images.get(position);
+        Picasso.get()
+                .load("http://10.0.2.2:8080/" + image.getPath())
+                .error(R.drawable.placeholder_image_square)
+                .placeholder(R.drawable.placeholder_image_square)
+                .into(imageView);
+        imageService.setLiked(image.getId());
+        titleView.setText(image.getTitle());
+        authorView.setText(getString(R.string.imageAuthorPrefix, image.getUsername()));
+        likesView.setText("");
+        imageService.getLikes(image.getId(), obj ->
+                likesView.setText(getString(R.string.imageLikesSuffix, obj.optInt("likes", 0))));
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        gestureDetector.onTouchEvent(event);
+        swipe.dispatchTouchEvent(event);
+        return super.dispatchTouchEvent(event);
     }
 }

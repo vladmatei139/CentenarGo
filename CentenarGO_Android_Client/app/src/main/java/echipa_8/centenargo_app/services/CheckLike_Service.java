@@ -69,11 +69,11 @@ public class CheckLike_Service extends AsyncTask<String, String, Object> {
         return null;
     }
 
-    @Override
-    protected void onPostExecute (Object o) {
-        super.onPostExecute(o);
-        image_activity.get().validateCheck((Boolean) o);
-    }
+//    @Override
+//    protected void onPostExecute (Object o) {
+//        super.onPostExecute(o);
+//        image_activity.get().validateCheck((Boolean) o);
+//    }
 }
 
 

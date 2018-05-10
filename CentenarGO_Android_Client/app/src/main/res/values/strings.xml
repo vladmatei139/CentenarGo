@@ -23,7 +23,7 @@
     <string name="screen1_title"> Welcome </string>
     <string name="screen1_desc"> Cu ocazia Centenarului Marii Uniri, am vrut sa contribuim cu informatii utile printr-o aplicatie interactiva pentru a pasi prin momentele istorice care au marcat acest eveniment. Asadar, va invitam sa le descoperiti prin parcurgerea unor trasee tematice care contin cladiri reprezentative ale Bucurestiului din anii 1918 - 1920 care exista si astazi. </string>
     <string name="screen2_title"> Routes </string>
-    <string name="screen2_desc"> V-am pregatit trei tasee, fiecare ascunzand tipuri diferite de institutii, tocmai pentru a trezi interesul unui public cat mai larg:\n - Traseul scurt, format din 3 obiective;              \n - Traseul mediu, cu aproximativ 5 obiective; \n - Traseul lung, cel mai interesant de altfel, va contine 7 obiective. \n Ordinea in care se pot parcurge acestea este la libera alegere, insa, trebuie sa stiti ca daca renuntati la un traseu in defavoarea altuia, progresul realizat pe traseul initial va fi pierdut! </string>
+    <string name="screen2_desc"> V-am pregatit trei trasee, fiecare ascunzand tipuri diferite de institutii, tocmai pentru a trezi interesul unui public cat mai larg:\n - Traseul scurt, format din 3 obiective;              \n - Traseul mediu, cu aproximativ 5 obiective; \n - Traseul lung, cel mai interesant de altfel, va contine 7 obiective. \n Ordinea in care se pot parcurge acestea este la libera alegere, insa, trebuie sa stiti ca daca renuntati la un traseu in defavoarea altuia, progresul realizat pe traseul initial va fi pierdut! </string>
     <string name="screen3_title"> Landmarks </string>
     <string name="screen3_desc"> Odata ce ati ajuns la una dintre locatiile propuse din traseu, va bucurati de cele vazute, cititi informatiile oferite, urmand sa rezolvati un chestionar rapid cu intrebari relevante noii descoperiri. In cazul in care raspundeti corect la toate intrebarile, vi se va dezvalui locatia urmatorului obiectiv din traseu, iar daca nu treceti testul din prima, incercati din nou! \n Prin urmare, vizitati, descoperiti si aflati lucruri fascinante!</string>
     <string name="screen4_title"> Gallery </string>
@@ -31,5 +31,7 @@
     <string name="next">NEXT</string>
     <string name="skip">SKIP</string>
     <string name="start">GOT IT</string>
+    <string name="imageAuthorPrefix">de %1$s</string>
+    <string name="imageLikesSuffix">%1$d likes</string>
 
 </resources>
