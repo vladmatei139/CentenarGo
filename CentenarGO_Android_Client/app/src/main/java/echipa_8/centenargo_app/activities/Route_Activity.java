@@ -71,7 +71,8 @@ public class Route_Activity extends AppCompatActivity implements OnMapReadyCallb
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        if(mToggle.onOptionsItemSelected(item)){
+        if (mToggle.onOptionsItemSelected(item)) {
+
             switch (item.getItemId()) {
                 case R.id.action_settings:
                     Intent intent = new Intent(getApplicationContext(), Gallery_Activity.class);
@@ -82,7 +83,7 @@ public class Route_Activity extends AppCompatActivity implements OnMapReadyCallb
                     return true;
             }
         }
-        return super.onOptionsItemSelected(item);
+            return super.onOptionsItemSelected(item);
     }
 
     public void setLandmarks(String response) {
