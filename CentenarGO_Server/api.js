@@ -96,10 +96,17 @@ router.post('/routes', errorCatcher(async (req, res, next) => {
      * Rutele sunt aceleasi pentru toti userii logati. 
      * Se intorc numele "name" si coordonatele ("beginLatitude", "beginLongitude") ale primului obiectiv al fiecarei rute care are cel putin un obiectiv.
      */
-    const { rows } = await client.query(`SELECT r.id as id, r.name as name, l.latitude as beginLatitude, l.longitude as beginLongitude
+    const { rows } = await client.query(`SELECT r.id as id, r.name as name,
+											(CASE 
+												WHEN datecompleted IS NULL THEN 0
+												ELSE 1
+											END) as completed, l.latitude as beginLatitude, l.longitude as beginLongitude
                                          FROM routes r
                                          JOIN landmarks l ON l.route = r.id
-                                         WHERE l.routeorder = 1`);
+										 LEFT JOIN userroutes ur
+										 ON ur.routeid = r.id
+										 AND ur.userid = $1::uuid
+                                         WHERE l.routeorder = 1`, [req.id]);
     if (rows.length === 0) {
         res.status(500).send('No routes.');
         return;

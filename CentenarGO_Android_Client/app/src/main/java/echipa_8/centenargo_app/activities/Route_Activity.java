@@ -36,6 +36,7 @@ public class Route_Activity extends AppCompatActivity implements OnMapReadyCallb
 
     private String[] dataset;
     private Integer mRoute;
+    private Boolean mRouteCompleted;
     private GoogleMap mMap;
 
     Toolbar mActionBarToolbar;
@@ -48,6 +49,7 @@ public class Route_Activity extends AppCompatActivity implements OnMapReadyCallb
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         mRoute = intent.getIntExtra(getString(R.string.route_id_key), 0);
+        mRouteCompleted = intent.getBooleanExtra("Completed", false);
         setContentView(R.layout.activity_route_);
 
         mActionBarToolbar = findViewById(R.id.toolbar_route);
@@ -92,7 +94,7 @@ public class Route_Activity extends AppCompatActivity implements OnMapReadyCallb
         RecyclerView landmarksView = findViewById(R.id.recyclerView_landmarks);
         RecyclerView.LayoutManager landmarksLayoutManager = new LinearLayoutManager(this);
         landmarksView.setLayoutManager(landmarksLayoutManager);
-        RecyclerView.Adapter landmarksAdapter = new RecycleViewLandmarkAdapter(this, identifiers, mRoute);
+        RecyclerView.Adapter landmarksAdapter = new RecycleViewLandmarkAdapter(this, identifiers, mRoute, mRouteCompleted);
         landmarksView.setAdapter(landmarksAdapter);
 
         if (MapUtility.getLocationPermission(this))

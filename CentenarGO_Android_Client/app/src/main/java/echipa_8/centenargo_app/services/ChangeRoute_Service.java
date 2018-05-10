@@ -23,7 +23,7 @@ public class ChangeRoute_Service extends AsyncTask<String, String, Object> {
 
     private WeakReference<Routes_Activity> routes_activity;
     private String newRoute;
-
+    private String completed;
     public ChangeRoute_Service(final Routes_Activity routes_activity) {
         this.routes_activity = new WeakReference<>(routes_activity);
     }
@@ -45,6 +45,7 @@ public class ChangeRoute_Service extends AsyncTask<String, String, Object> {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("token", token);
             newRoute = strings[0];
+            completed = strings[1];
             DataOutputStream dos = new DataOutputStream(httpURLConnection.getOutputStream());
             dos.writeBytes(jsonObject.toString());
             dos.flush();
@@ -70,6 +71,6 @@ public class ChangeRoute_Service extends AsyncTask<String, String, Object> {
     @Override
     protected void onPostExecute(Object o) {
         super.onPostExecute(o);
-        this.routes_activity.get().changeRouteIntent(newRoute);
+        this.routes_activity.get().changeRouteIntent(newRoute + "," + completed);
     }
 }
