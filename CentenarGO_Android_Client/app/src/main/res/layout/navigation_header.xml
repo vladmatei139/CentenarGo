@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="140dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/apuseni"
+            android:adjustViewBounds="true"
+
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CentenarGo"
+            android:padding="20dp"
+            android:textColor="#000000"
+            android:textSize="20dp"
+            android:gravity="center"/>
+
+    </RelativeLayout>
+
+
+
+</android.support.constraint.ConstraintLayout>

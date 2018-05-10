@@ -2,16 +2,16 @@ package echipa_8.centenargo_app.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
-import android.support.v4.util.Pair;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -28,11 +28,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import echipa_8.centenargo_app.R;
-import echipa_8.centenargo_app.adapters.RecycleViewLandmarkAdapter;
 import echipa_8.centenargo_app.adapters.RecyclerViewImageGalleryAdapter;
 import echipa_8.centenargo_app.utilities.Image;
 import echipa_8.centenargo_app.utilities.MapUtility;
+
 import echipa_8.centenargo_app.utilities.SharedPreferencesUtility;
 
 public class Gallery_Activity extends AppCompatActivity {
@@ -40,16 +41,66 @@ public class Gallery_Activity extends AppCompatActivity {
     private String token;
     Toolbar mActionBarToolbar;
 
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mToggle;
+
+
+    private void setNavigationBar() {
+        mDrawerLayout = (DrawerLayout)findViewById(R.id.gallery_drawer);
+        mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
+        mDrawerLayout.addDrawerListener(mToggle);
+        mToggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        NavigationView navigationView = findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(item -> {
+            Intent intent;
+            switch (item.getItemId()){
+                case R.id.menu_gallery:
+                    intent = new Intent(this.getApplicationContext(), Gallery_Activity.class);
+                    this.startActivity(intent);
+                    return true;
+
+                case R.id.menu_routes:
+                    intent = new Intent(this.getApplicationContext(), Routes_Activity.class);
+                    this.startActivity(intent);
+                    return true;
+
+                case R.id.menu_sign_off:
+                    Toast.makeText(this, "You've been logged out", Toast.LENGTH_SHORT).show();
+                    intent = new Intent(getApplicationContext(), Login_Activity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    return true;
+
+                case R.id.menu_tutorial:
+                    intent = new Intent(this.getApplicationContext(), Intro_Activity.class);
+                    startActivity(intent);
+                    return true;
+
+                case R.id.menu_stats:
+                    // todo: Start Statistics intent
+                    return true;
+
+                default:
+                    return true;
+            }
+        });
+
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery_);
-        token = SharedPreferencesUtility.getToken();
-        mActionBarToolbar = findViewById(R.id.toolbar_route);
+        mActionBarToolbar = findViewById(R.id.toolbar_gallery);
         mActionBarToolbar.setTitle(R.string.app_name);
         setSupportActionBar(mActionBarToolbar);
+        token = SharedPreferencesUtility.getToken();
 
         ArrayList<Image> images = new ArrayList<>();
+        setNavigationBar();
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 
         RecyclerView galleryView = findViewById(R.id.gallery_recycler_view);
@@ -99,4 +150,12 @@ public class Gallery_Activity extends AppCompatActivity {
         return map;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if(mToggle.onOptionsItemSelected(item)){
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

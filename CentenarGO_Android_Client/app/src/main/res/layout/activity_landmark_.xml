@@ -1,85 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+
+<android.support.v4.widget.DrawerLayout android:id="@+id/landmark_drawer"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="echipa_8.centenargo_app.activities.Landmark_Activity"
-    android:orientation="vertical"
-    android:weightSum="10"
-    android:gravity="top">
+    tools:context=".activities.Landmark_Activity"
+    xmlns:tools="http://schemas.android.com/tools">
 
 
-
-    <com.master.glideimageview.GlideImageView
-        android:id="@+id/landmark_image_view"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="3"
-        android:paddingTop="10dp"
-        app:error_res="@drawable/image_not_found" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="14"
+        android:background="@drawable/landmark_bg"
+        android:gravity="top">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:id="@+id/landmark_title"
-        android:gravity="center"
-        android:text=""
-        android:textSize="18sp"/>
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_landmark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme" />
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="3"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp">
+        <com.master.glideimageview.GlideImageView
+            android:id="@+id/landmark_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="5"
+            android:paddingTop="10dp"
+            app:error_res="@drawable/image_not_found" />
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:id="@+id/landmark_title"
+            android:textColor="@color/colorTextLandmark"
+            android:gravity="center"
             android:text=""
-            android:textSize="16sp"
-            android:id="@+id/landmark_description"/>
+            android:textSize="18sp"/>
 
-    </ScrollView>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp">
 
-    <!--<View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>-->
-    <Button
-        android:id="@+id/upload_button"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="Upload Image"
-        />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="@color/colorTextLandmark"
+                android:textSize="16sp"
+                android:id="@+id/landmark_description"/>
 
-    <Button
-        android:id="@+id/check_location_button"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="Check Location" />
-
-    <Button
-        android:id="@+id/quiz_button"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="Quiz" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
-        android:gravity="center"
-        android:paddingTop="10dp"
-        android:orientation="vertical"
-        android:paddingBottom="10dp">
+        </ScrollView>
 
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:paddingTop="10dp"
+            android:orientation="horizontal"
+            android:paddingBottom="10dp"
+            android:weightSum="12">
+
+
+                <Button
+                    android:id="@+id/upload_button"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:text="@string/upload_image"
+                    android:drawableStart="@mipmap/baseline_add_a_photo_white_18dp"
+                    android:theme="@style/LightFlatButton" />
+
+
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="4"
+                    android:text="@string/check_location"
+                    android:drawableStart="@mipmap/baseline_location_on_white_18dp"
+                    android:theme="@style/LightFlatButton"
+                    android:id="@+id/check_location_button"/>
+
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:text="@string/quiz"
+                    android:drawableStart="@mipmap/baseline_question_answer_white_18dp"
+                    android:theme="@style/LightFlatButton"
+                    android:id="@+id/quiz_button"/>
+
+
+
+        </LinearLayout>
     </LinearLayout>
+    <android.support.design.widget.NavigationView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        app:menu="@menu/navigation_menu"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/navigation_header"
+        android:id="@+id/navigation_view">
 
-</LinearLayout>
+    </android.support.design.widget.NavigationView>
+
+
+</android.support.v4.widget.DrawerLayout>

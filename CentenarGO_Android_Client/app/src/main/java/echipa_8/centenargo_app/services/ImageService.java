@@ -90,6 +90,7 @@ public class ImageService {
     }
 
     public void setLiked(Integer imageId) {
+        this.requestQueue.cancelAll(r -> true);
         this.liked = null;
         checkLike(imageId, obj -> liked = obj.optBoolean("correct"));
     }

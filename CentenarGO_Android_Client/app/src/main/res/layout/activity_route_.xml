@@ -1,33 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
+
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/linear_layout_route"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".activities.Route_Activity"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:id="@+id/route_drawer">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar_route"
+    <LinearLayout
+        android:id="@+id/linear_layout_route"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <fragment
-        android:id="@+id/map_route"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="70"
-        tools:context="echipa_8.centenargo_app.activities.Route_Activity" />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_route"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView_landmarks"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:scrollbars="vertical"
-        android:layout_weight="30"/>
+        <fragment
+            android:id="@+id/map_route"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="70" />
 
-</LinearLayout>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView_landmarks"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:scrollbars="vertical"
+            android:layout_weight="30"/>
+    </LinearLayout>
+
+    <android.support.design.widget.NavigationView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        app:menu="@menu/navigation_menu"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/navigation_header"
+        android:id="@+id/navigation_view">
+
+    </android.support.design.widget.NavigationView>
+
+
+</android.support.v4.widget.DrawerLayout>

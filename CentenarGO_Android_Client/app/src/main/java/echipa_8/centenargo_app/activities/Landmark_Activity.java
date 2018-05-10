@@ -2,9 +2,16 @@ package echipa_8.centenargo_app.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
+import android.os.SystemClock;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,6 +23,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import echipa_8.centenargo_app.R;
 import echipa_8.centenargo_app.services.CheckLocation_Service;
@@ -37,6 +46,54 @@ public class Landmark_Activity extends AppCompatActivity {
     private Integer mRouteId;
     private Toolbar mActionBarToolbar;
 
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mToggle;
+
+
+    private void setNavigationBar() {
+        mDrawerLayout = (DrawerLayout)findViewById(R.id.landmark_drawer);
+        mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
+        mDrawerLayout.addDrawerListener(mToggle);
+        mToggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        NavigationView navigationView = findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(item -> {
+            Intent intent;
+            switch (item.getItemId()){
+                case R.id.menu_gallery:
+                    intent = new Intent(this.getApplicationContext(), Gallery_Activity.class);
+                    this.startActivity(intent);
+                    return true;
+
+                case R.id.menu_routes:
+                    intent = new Intent(this.getApplicationContext(), Routes_Activity.class);
+                    this.startActivity(intent);
+                    return true;
+
+                case R.id.menu_sign_off:
+                    Toast.makeText(this, "You've been logged out", Toast.LENGTH_SHORT).show();
+                    intent = new Intent(getApplicationContext(), Login_Activity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    return true;
+
+                case R.id.menu_tutorial:
+                    intent = new Intent(this.getApplicationContext(), Intro_Activity.class);
+                    startActivity(intent);
+                    return true;
+
+                case R.id.menu_stats:
+                    // todo: Start Statistics intent
+                    return true;
+
+                default:
+                    return true;
+            }
+        });
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +104,12 @@ public class Landmark_Activity extends AppCompatActivity {
         mRouteId = intent.getIntExtra(getString(R.string.route_id_key), 0);
         Landmark_Service landmarkService = new Landmark_Service(this);
         landmarkService.execute(mLandmarkId.toString(), mRouteId.toString());
+
+        mActionBarToolbar = findViewById(R.id.toolbar_landmark);
+        mActionBarToolbar.setTitle("CentenarGo");
+        setSupportActionBar(mActionBarToolbar);
+
+        setNavigationBar();
 
         linkFields();
 
@@ -148,7 +211,51 @@ public class Landmark_Activity extends AppCompatActivity {
     }
 
     public void setContent(String content) {
-        mLandmarkDescription.setText(content);
+
+        //mLandmarkDescription.setText(content);
+
+        CharSequence oldDescription = mLandmarkDescription.getText();
+
+        if(oldDescription.equals(content)){
+            return;
+        }
+
+        final int[] i = new int[1];
+        i[0] = oldDescription.length();
+        final int length = content.length();
+
+        final Handler handler = new Handler()
+        {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                char c = content.charAt(i[0]);
+                mLandmarkDescription.append(String.valueOf(c));
+                i[0]++;
+            }
+        };
+
+        final Timer timer = new Timer();
+        TimerTask taskEverySplitSecond = new TimerTask() {
+            @Override
+            public void run() {
+                handler.sendEmptyMessage(0);
+                if (i[0] == length - 1) {
+                    timer.cancel();
+                }
+            }
+        };
+        timer.schedule(taskEverySplitSecond, 1/5, 15);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if(mToggle.onOptionsItemSelected(item)){
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void validateCheck(Boolean o) {
@@ -163,4 +270,5 @@ public class Landmark_Activity extends AppCompatActivity {
             landmarkContent_service.execute(mLandmarkId.toString());
         }
     }
+
 }

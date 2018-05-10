@@ -6,7 +6,11 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
@@ -35,6 +39,10 @@ public class Upload_Activity extends AppCompatActivity {
     private Upload_Service upload_service;
     private String b64img;
 
+    Toolbar mActionBarToolbar;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mToggle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,21 +57,62 @@ public class Upload_Activity extends AppCompatActivity {
         upload.setVisibility(View.INVISIBLE);
         upload_service = new Upload_Service(this);
 
-        imgsel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivityForResult(new Intent(Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI),
-                        GET_FROM_GALLERY);
+        imgsel.setOnClickListener(v -> startActivityForResult(new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.INTERNAL_CONTENT_URI),
+                GET_FROM_GALLERY));
+
+        upload.setOnClickListener(v -> {
+            upload_service.execute(mLandmarkId.toString(), b64img);
+            finish();
+        });
+
+        mActionBarToolbar = findViewById(R.id.toolbar_upload);
+        mActionBarToolbar.setTitle(R.string.app_name);
+        setSupportActionBar(mActionBarToolbar);
+        setNavigationBar();
+    }
+
+    private void setNavigationBar() {
+        mDrawerLayout = (DrawerLayout)findViewById(R.id.upload_drawer);
+        mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
+        mDrawerLayout.addDrawerListener(mToggle);
+        mToggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        NavigationView navigationView = findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(item -> {
+            Intent intent;
+            switch (item.getItemId()){
+                case R.id.menu_gallery:
+                    intent = new Intent(this.getApplicationContext(), Gallery_Activity.class);
+                    this.startActivity(intent);
+                    return true;
+
+                case R.id.menu_routes:
+                    intent = new Intent(this.getApplicationContext(), Routes_Activity.class);
+                    this.startActivity(intent);
+                    return true;
+
+                case R.id.menu_sign_off:
+                    Toast.makeText(this, "You've been logged out", Toast.LENGTH_SHORT).show();
+                    intent = new Intent(getApplicationContext(), Login_Activity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    return true;
+
+                case R.id.menu_tutorial:
+                    // todo: Start Tutorial intent
+                    return true;
+
+                case R.id.menu_stats:
+                    // todo: Start Statistics intent
+                    return true;
+
+                default:
+                    return true;
             }
         });
 
-        upload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                upload_service.execute(mLandmarkId.toString(), b64img);
-                finish();
-            }});
     }
 
     @Override

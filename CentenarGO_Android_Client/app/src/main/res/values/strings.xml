@@ -19,7 +19,12 @@
     <string name="route_id_key">RouteId</string>
     <string name="landmark_id_key">LandmarkId</string>
     <string name="test_string">Palatul Cercul Militar Național este o clădire din București care găzduiește instituția centrală de cultură a Armatei române, cu profil cultural-educativ, artistic, recreativ-distractiv, precum și de imagine, reprezentare și protocol.  Lucrările pentru construcția Palatului Cercului Militar Național au început în anul 1911, deși terenul unde urma să se ridice edificiul fusese cedat de Ministerul Domeniilor încă din 1898.  Proiectantul principal al monumentalului Palat al Cercului Militar Național a fost arhitectul român Dimitrie Maimarolu, în colaborare cu Victor Ștefănescu și Ernest Doneaud. Unele din decorațiunile interioare și exterioare la noua construcție a Cercului Militar, inclusiv cei doi mari vulturi plasați spre a fi protectori ai panoului cu firma instituției, au fost executate de sculptorul Ion Schmidt Faur[1].  Beneficiarul lucrării a fost Cercul militar al ofițerilor din garnizoana București, organizație a ofițerilor români înființată în 15 decembrie 1876.</string>
-    <string name="appSettings">Routes </string>>
+
+    <string name="appSettings" >Routes</string>>
+
+    <string name="open"> Open </string>
+    <string name="close"> Close </string>
+
     <string name="screen1_title"> Welcome </string>
     <string name="screen1_desc"> Cu ocazia Centenarului Marii Uniri, am vrut sa contribuim cu informatii utile printr-o aplicatie interactiva pentru a pasi prin momentele istorice care au marcat acest eveniment. Asadar, va invitam sa le descoperiti prin parcurgerea unor trasee tematice care contin cladiri reprezentative ale Bucurestiului din anii 1918 - 1920 care exista si astazi. </string>
     <string name="screen2_title"> Routes </string>
@@ -33,5 +38,8 @@
     <string name="start">GOT IT</string>
     <string name="imageAuthorPrefix">de %1$s</string>
     <string name="imageLikesSuffix">%1$d likes</string>
+    <string name="upload_image">Upload Image</string>
+    <string name="check_location">Check location</string>
+    <string name="quiz">Quiz</string>
 
 </resources>

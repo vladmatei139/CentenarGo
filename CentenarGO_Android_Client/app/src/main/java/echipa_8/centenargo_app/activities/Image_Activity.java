@@ -51,6 +51,8 @@ public class Image_Activity extends AppCompatActivity {
         Image image = images.get(position);
 
         imageService = new ImageService(this, image.getId());
+        swipe = new Swipe();
+
         layout = findViewById(R.id.image_frame_layout);
         imageView = findViewById(R.id.image_image);
         textLayout = findViewById(R.id.image_text_layout);
@@ -59,8 +61,12 @@ public class Image_Activity extends AppCompatActivity {
         likesView = findViewById(R.id.image_likes);
 
         loadImage();
+    }
 
-        swipe = new Swipe();
+    private void loadImage() {
+
+        Image image = images.get(position);
+
         swipe.setListener(new SimpleSwipeListener() {
             @Override
             public boolean onSwipedLeft(final MotionEvent event) {
@@ -88,15 +94,12 @@ public class Image_Activity extends AppCompatActivity {
             @Override
             public boolean onDoubleTap(MotionEvent event) {
                 imageService.like(image.getId(), o ->
-                    imageService.getLikes(image.getId(), obj ->
-                            likesView.setText(getString(R.string.imageLikesSuffix, obj.optInt("likes", 0)))));
+                        imageService.getLikes(image.getId(), obj ->
+                                likesView.setText(getString(R.string.imageLikesSuffix, obj.optInt("likes", 0)))));
                 return true;
             }
         });
-    }
 
-    private void loadImage() {
-        Image image = images.get(position);
         Picasso.get()
                 .load("http://10.0.2.2:8080/" + image.getPath())
                 .error(R.drawable.placeholder_image_square)
