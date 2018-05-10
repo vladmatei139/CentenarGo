@@ -19,8 +19,25 @@
     <string name="route_id_key">RouteId</string>
     <string name="landmark_id_key">LandmarkId</string>
     <string name="test_string">Palatul Cercul Militar Național este o clădire din București care găzduiește instituția centrală de cultură a Armatei române, cu profil cultural-educativ, artistic, recreativ-distractiv, precum și de imagine, reprezentare și protocol.  Lucrările pentru construcția Palatului Cercului Militar Național au început în anul 1911, deși terenul unde urma să se ridice edificiul fusese cedat de Ministerul Domeniilor încă din 1898.  Proiectantul principal al monumentalului Palat al Cercului Militar Național a fost arhitectul român Dimitrie Maimarolu, în colaborare cu Victor Ștefănescu și Ernest Doneaud. Unele din decorațiunile interioare și exterioare la noua construcție a Cercului Militar, inclusiv cei doi mari vulturi plasați spre a fi protectori ai panoului cu firma instituției, au fost executate de sculptorul Ion Schmidt Faur[1].  Beneficiarul lucrării a fost Cercul militar al ofițerilor din garnizoana București, organizație a ofițerilor români înființată în 15 decembrie 1876.</string>
+
     <string name="appSettings" >Routes</string>>
 
     <string name="open"> Open </string>
     <string name="close"> Close </string>
+
+    <string name="screen1_title"> Welcome </string>
+    <string name="screen1_desc"> Cu ocazia Centenarului Marii Uniri, am vrut sa contribuim cu informatii utile printr-o aplicatie interactiva pentru a pasi prin momentele istorice care au marcat acest eveniment. Asadar, va invitam sa le descoperiti prin parcurgerea unor trasee tematice care contin cladiri reprezentative ale Bucurestiului din anii 1918 - 1920 care exista si astazi. </string>
+    <string name="screen2_title"> Routes </string>
+    <string name="screen2_desc"> V-am pregatit trei tasee, fiecare ascunzand tipuri diferite de institutii, tocmai pentru a trezi interesul unui public cat mai larg:\n - Traseul scurt, format din 3 obiective;              \n - Traseul mediu, cu aproximativ 5 obiective; \n - Traseul lung, cel mai interesant de altfel, va contine 7 obiective. \n Ordinea in care se pot parcurge acestea este la libera alegere, insa, trebuie sa stiti ca daca renuntati la un traseu in defavoarea altuia, progresul realizat pe traseul initial va fi pierdut! </string>
+    <string name="screen3_title"> Landmarks </string>
+    <string name="screen3_desc"> Odata ce ati ajuns la una dintre locatiile propuse din traseu, va bucurati de cele vazute, cititi informatiile oferite, urmand sa rezolvati un chestionar rapid cu intrebari relevante noii descoperiri. In cazul in care raspundeti corect la toate intrebarile, vi se va dezvalui locatia urmatorului obiectiv din traseu, iar daca nu treceti testul din prima, incercati din nou! \n Prin urmare, vizitati, descoperiti si aflati lucruri fascinante!</string>
+    <string name="screen4_title"> Gallery </string>
+    <string name="screen4_desc"> Pe tot parcursul acestei descoperiri, aveti sansa ca pentru fiecare obiectiv sa incarcati o fotografie care sa puna in valoare edificiul. Cu cat aceasta primeste mai multe aprecieri din partea celorlalti utilizatori, cu atat va veti clasa mai sus in clasament. \n Un singur lucru mai mentionam inainte de a incepe calatoria: Se va lasa cu premii!</string>
+    <string name="next">NEXT</string>
+    <string name="skip">SKIP</string>
+    <string name="start">GOT IT</string>
+    <string name="upload_image">Upload Image</string>
+    <string name="check_location">Check location</string>
+    <string name="quiz">Quiz</string>
+
 </resources>

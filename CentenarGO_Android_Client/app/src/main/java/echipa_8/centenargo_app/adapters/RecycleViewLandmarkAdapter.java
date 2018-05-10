@@ -51,14 +51,11 @@ public class RecycleViewLandmarkAdapter extends RecyclerView.Adapter<RecycleView
     @Override
     public void onBindViewHolder(RecycleViewLandmarkAdapter.LandmarkViewHolder holder, final int position) {
         holder.mTextView.setText(mIdentifiers.first[position]);
-        holder.mLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(mContext.get().getApplicationContext(), Landmark_Activity.class);
-                intent.putExtra(mContext.get().getString(R.string.landmark_id_key), mIdentifiers.second[position]);
-                intent.putExtra(mContext.get().getString(R.string.route_id_key), mRouteId);
-                mContext.get().startActivity(intent);
-            }
+        holder.mLinearLayout.setOnClickListener(view -> {
+            Intent intent = new Intent(mContext.get().getApplicationContext(), Landmark_Activity.class);
+            intent.putExtra(mContext.get().getString(R.string.landmark_id_key), mIdentifiers.second[position]);
+            intent.putExtra(mContext.get().getString(R.string.route_id_key), mRouteId);
+            mContext.get().startActivity(intent);
         });
     }
 

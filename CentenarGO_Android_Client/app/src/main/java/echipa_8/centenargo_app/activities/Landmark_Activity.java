@@ -2,6 +2,9 @@ package echipa_8.centenargo_app.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
+import android.os.SystemClock;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -20,6 +23,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import echipa_8.centenargo_app.R;
 import echipa_8.centenargo_app.services.LandmarkContent_Service;
@@ -72,7 +77,8 @@ public class Landmark_Activity extends AppCompatActivity {
                     return true;
 
                 case R.id.menu_tutorial:
-                    // todo: Start Tutorial intent
+                    intent = new Intent(this.getApplicationContext(), Intro_Activity.class);
+                    startActivity(intent);
                     return true;
 
                 case R.id.menu_stats:
@@ -115,6 +121,7 @@ public class Landmark_Activity extends AppCompatActivity {
         mQuizButton.setVisibility(View.INVISIBLE);
         mCheckLocationButton = findViewById(R.id.check_location_button);
         mUploadButton = findViewById(R.id.upload_button);
+        mUploadButton.setVisibility(View.INVISIBLE);
     }
 
     private void loadImageFromURL(String URL){
@@ -142,6 +149,9 @@ public class Landmark_Activity extends AppCompatActivity {
 
             if (!current)
                 mQuizButton.setVisibility(View.VISIBLE);
+
+            if (!current)
+                mUploadButton.setVisibility(View.VISIBLE);
 
             mQuizButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -184,6 +194,7 @@ public class Landmark_Activity extends AppCompatActivity {
     public void locationResponse(Boolean proximity) {
         if (proximity) {
             mQuizButton.setVisibility(View.VISIBLE);
+            mUploadButton.setVisibility(View.VISIBLE);
             LandmarkContent_Service landmarkContent_service = new LandmarkContent_Service(this);
             landmarkContent_service.execute(mLandmarkId.toString());
         }
@@ -192,7 +203,38 @@ public class Landmark_Activity extends AppCompatActivity {
     }
 
     public void setContent(String content) {
-        mLandmarkDescription.setText(content);
+
+        //mLandmarkDescription.setText(content);
+
+        CharSequence oldDescription = mLandmarkDescription.getText();
+
+        final int[] i = new int[1];
+        i[0] = oldDescription.length();
+        final int length = content.length();
+
+        final Handler handler = new Handler()
+        {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                char c = content.charAt(i[0]);
+                mLandmarkDescription.append(String.valueOf(c));
+                i[0]++;
+            }
+        };
+
+        final Timer timer = new Timer();
+        TimerTask taskEverySplitSecond = new TimerTask() {
+            @Override
+            public void run() {
+                handler.sendEmptyMessage(0);
+                if (i[0] == length - 1) {
+                    timer.cancel();
+                }
+            }
+        };
+        timer.schedule(taskEverySplitSecond, 1/5, 15);
+
     }
 
     @Override

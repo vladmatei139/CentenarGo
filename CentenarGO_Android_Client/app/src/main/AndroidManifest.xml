@@ -37,6 +37,7 @@
 
         </activity>
         <activity android:name=".activities.Image_Activity" />
+        <activity android:name=".activities.Intro_Activity" />
     </application>
 
 </manifest>

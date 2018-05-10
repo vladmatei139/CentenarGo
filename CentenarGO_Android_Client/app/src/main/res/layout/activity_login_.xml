@@ -69,7 +69,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="loginAction"
-            android:text="@string/buttonLoginButton" />
+            android:text="@string/buttonLoginButton"
+            android:theme="@style/PrimaryFlatButton"/>
 
         <Space
             android:layout_width="match_parent"
@@ -106,13 +107,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="registerAction"
-            android:text="@string/loginRegisterButton" />
+            android:text="@string/loginRegisterButton"
+            android:theme="@style/PrimaryFlatButton"/>
 
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/loginTouristButton" />
+            android:text="@string/loginTouristButton"
+            android:theme="@style/PrimaryFlatButton"/>
 
     </LinearLayout>
 

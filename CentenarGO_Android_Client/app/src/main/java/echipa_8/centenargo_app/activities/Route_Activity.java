@@ -163,7 +163,8 @@ public class Route_Activity extends AppCompatActivity implements OnMapReadyCallb
                     return true;
 
                 case R.id.menu_tutorial:
-                    // todo: Start Tutorial intent
+                    intent = new Intent(this.getApplicationContext(), Intro_Activity.class);
+                    startActivity(intent);
                     return true;
 
                 case R.id.menu_stats:

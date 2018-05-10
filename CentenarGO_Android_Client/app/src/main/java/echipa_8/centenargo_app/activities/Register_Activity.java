@@ -13,8 +13,6 @@ import echipa_8.centenargo_core.utilities.ValidationUtility;
 
 public class Register_Activity extends AppCompatActivity {
 
-    private static String response = "";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,39 +34,38 @@ public class Register_Activity extends AppCompatActivity {
         String firstName = tvFirstName.getText().toString().trim();
         String lastName = tvLastName.getText().toString().trim();
 
+        if(!ValidationUtility.isValidEmail(email)){
+            toast("Email address is not valid!");
+            return;
+        }
 
         if(!password.equals(repeatPass)){
             toast("Passwords don't match");
             return;
         }
 
-        if(!ValidationUtility.isValidEmail(email)){
-            toast("Email address is not valid!");
+        if(password.isEmpty())
+        {
+            toast("Password is required");
             return;
         }
-
-        Register_Service register_service = new Register_Service();
+        
+        Register_Service register_service = new Register_Service(this);
         register_service.execute(email, username, password, firstName, lastName);
-
-        if(null != getResponse()) {
-            toast("SUCCESS");
-            Intent intent = new Intent(getApplicationContext(), Login_Activity.class);
-            startActivity(intent);
-            finish();
-        } else {
-            toast("FAIL");
-        }
     }
 
     private void toast(String message){
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 
-    public static void setResponse(String newResponse){
-        response = newResponse;
+    public void checkRegister(String response){
+        if(null != response) {
+            toast("SUCCESS");
+            Intent intent = new Intent(getApplicationContext(), Login_Activity.class);
+            startActivity(intent);
+            finish();
+        } else {
+            toast("FAIL - Email already exists!");
+        }
     }
-    public static String getResponse(){
-        return response;
-    }
-
 }

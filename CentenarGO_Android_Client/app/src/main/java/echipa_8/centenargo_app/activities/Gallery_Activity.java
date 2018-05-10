@@ -27,8 +27,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import echipa_8.centenargo_app.R;
 import echipa_8.centenargo_app.adapters.RecyclerViewImageGalleryAdapter;
+import echipa_8.centenargo_app.utilities.SharedPreferencesUtility;
 
 public class Gallery_Activity extends AppCompatActivity {
 
@@ -68,7 +70,8 @@ public class Gallery_Activity extends AppCompatActivity {
                     return true;
 
                 case R.id.menu_tutorial:
-                    // todo: Start Tutorial intent
+                    intent = new Intent(this.getApplicationContext(), Intro_Activity.class);
+                    startActivity(intent);
                     return true;
 
                 case R.id.menu_stats:
@@ -89,8 +92,10 @@ public class Gallery_Activity extends AppCompatActivity {
         setContentView(R.layout.activity_gallery_);
 
         Intent intent = getIntent();
-//        token = intent.getStringExtra("token");
-        token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMyNmFlZTFlLTMwMzUtNDU5Ni1iMTg0LTJiNTY3Y2IyYjFhNCIsImlhdCI6MTUyNTgwMzMwNCwiZXhwIjoxNTI1ODQ2NTA0fQ.44gNDWBl-1TJ0NdrXmFnhy1VtD6k2wnDWuwczmcFfoc";
+        //token = intent.getStringExtra("token");
+        //token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMyNmFlZTFlLTMwMzUtNDU5Ni1iMTg0LTJiNTY3Y2IyYjFhNCIsImlhdCI6MTUyNTgwMzMwNCwiZXhwIjoxNTI1ODQ2NTA0fQ.44gNDWBl-1TJ0NdrXmFnhy1VtD6k2wnDWuwczmcFfoc";
+
+        String token = SharedPreferencesUtility.getToken();
 
         mActionBarToolbar = findViewById(R.id.toolbar_gallery);
         mActionBarToolbar.setTitle(R.string.app_name);

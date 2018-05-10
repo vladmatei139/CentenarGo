@@ -28,19 +28,29 @@ const errorCatcher = fn => (req, res, next) => {
 
 router.post('/signup', errorCatcher(async (req, res) => {
     hash = await bcrypt.hash(req.body.password, 10);
-    const result = await client.query(`INSERT INTO users (username, email, password) 
-                        VALUES ($1::text, $2::text, $3::text)
-						RETURNING id`, 
-                        [req.body.username, req.body.email, hash]);
+    const { rows } = await client.query(`SELECT 1
+                                         FROM users
+                                         WHERE email = $1::text`, [req.body.email]);
+    if (rows.length === 0) {
+        const result = await client.query(`INSERT INTO users (username, email, password) 
+                VALUES ($1::text, $2::text, $3::text)
+                                        RETURNING id`, 
+                [req.body.username, req.body.email, hash]);
 
-	await client.query(`INSERT INTO userdetails (lastname, firstname, userid) 
-                        VALUES ($1::text, $2::text, $3::uuid)`, 
-                        [req.body.lastname, req.body.firstname, result.rows[0].id]);
+        await client.query(`INSERT INTO userdetails (lastname,  firstname, userid) 
+                VALUES ($1::text, $2::text, $3::uuid)`, 
+                [req.body.lastname, req.body.firstname, result.rows[0].id]);
+        res.sendStatus(200);
+
+    }
+    else {
+        res.status(400).send('User already exists.');
+    }
 
 	/*await client.query(`INSERT INTO userroutes (routeid, datecompleted, currentlandmark, userid)
 						VALUES (1, null, 1, $1::uuid)`,
 						[result.rows[0].id])*/
-    res.sendStatus(200);
+    
 }));
 
 router.post('/login', errorCatcher(async (req, res) => {
@@ -151,7 +161,7 @@ router.post('/routeLoad/:routeId', errorCatcher(async (req, res, next) => {
 											(SELECT routeOrder
 											FROM landmarks
 											WHERE id = $2::int)
-										  ORDER BY routeorder`, [req.params.routeId, currentLandmark]);
+										  ORDER BY routeorder DESC`, [req.params.routeId, currentLandmark]);
 
     if (rowsLandmarks.rows.length === 0) {
         res.status(500).send('Route has no landmarks or does not exist.');

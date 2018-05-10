@@ -79,6 +79,7 @@ public class Routes_Service extends AsyncTask<String, String, Object> {
             if (replyCode == 200) {
                 Log.i("STATUS", replyCode.toString());
                 Log.i("MESSAGE", replyMessage);
+                httpURLConnection.disconnect();
             } else {
                 Log.w("ERROR", "Error code " + replyCode + ": " + replyMessage);
                 return null;
