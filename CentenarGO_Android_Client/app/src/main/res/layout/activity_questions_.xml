@@ -13,7 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:weightSum="10">
+        android:weightSum="10"
+        android:gravity="center_horizontal"
+        android:background="@drawable/quiz_bg">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar_questions"
@@ -27,7 +29,7 @@
             android:id="@+id/layout_questions"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="9"
+            android:layout_weight="8"
             android:orientation="vertical"
             android:scrollbars="vertical">
 
@@ -35,11 +37,12 @@
 
         <Button
             android:id="@+id/finish_questionnaire_button"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="finishAction"
             android:text="FINISH"
-            android:theme="@style/PrimaryFlatButton"
+            android:drawableStart="@mipmap/baseline_exit_to_app_white_18dp"
+            android:theme="@style/WhiteFlatButton"
             />
 
     </LinearLayout>

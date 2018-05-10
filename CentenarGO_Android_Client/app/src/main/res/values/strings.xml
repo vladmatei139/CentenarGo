@@ -41,5 +41,7 @@
     <string name="upload_image">Upload Image</string>
     <string name="check_location">Check location</string>
     <string name="quiz">Quiz</string>
+    <string name="add_image">Add a photo...</string>
+    <string name="select_image">Select Image</string>
 
 </resources>

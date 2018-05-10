@@ -10,11 +10,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:weightSum="10"
-        android:gravity="top">
+        android:gravity="center_horizontal"
+        android:background="@drawable/upload_bg">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar_upload"
@@ -25,28 +26,39 @@
             android:theme="?attr/actionBarTheme" />
 
         <TextView
-            android:text="Adauga o imagine..."
-            android:textSize="25sp"
-            android:layout_width="wrap_content"
-            android:layout_gravity="center"
-            android:layout_height="wrap_content" />
-        <Button
+            android:text="@string/add_image"
+            android:layout_marginTop="10dp"
+            android:textSize="30dp"
+            android:textColor="@color/colorTextLandmark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
+
+        <Button
+            android:id="@+id/selimg"
+            android:layout_width="wrap_content"
+            android:layout_height="10dp"
             android:layout_gravity="center"
-            android:text="Select Image"
-            android:id="@+id/selimg"/>
+            android:layout_weight="2"
+            android:drawableStart="@mipmap/baseline_photo_library_white_18dp"
+            android:text="@string/select_image"
+            android:theme="@style/WhiteFlatButton" />
+
         <ImageView
             android:layout_width="400px"
             android:layout_height="400px"
             android:layout_gravity="center"
             android:id="@+id/img"/>
+
         <Button
+            android:id="@+id/uploadimg"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="10dp"
+            android:layout_weight="2"
             android:layout_gravity="center"
-            android:text="Upload Image"
-            android:id="@+id/uploadimg"/>
+            android:text="@string/upload_image"
+            android:drawableStart="@mipmap/baseline_add_a_photo_white_18dp"
+            android:theme="@style/WhiteFlatButton"/>
     </LinearLayout>
 
     <android.support.design.widget.NavigationView

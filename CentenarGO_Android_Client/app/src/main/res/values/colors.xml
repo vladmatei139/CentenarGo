@@ -4,6 +4,7 @@
     <color name="colorPrimaryLight">#AEB8F4</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorWhite">#E6EAFF</color>
 
     <color name="colorTextLandmark">#F8F1FB</color>
     <!-- Intro colors -->

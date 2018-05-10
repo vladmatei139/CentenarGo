@@ -2,6 +2,8 @@ package echipa_8.centenargo_app.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -103,7 +105,7 @@ public class Questions_Activity extends AppCompatActivity {
         landmarkId = intent.getIntExtra(getString(R.string.landmark_id_key), 0);
 
         mActionBarToolbar = findViewById(R.id.toolbar_questions);
-        mActionBarToolbar.setTitle("CentenarGo");
+        mActionBarToolbar.setTitle(R.string.app_name);
         setSupportActionBar(mActionBarToolbar);
 
         setNavigationBar();
@@ -127,6 +129,8 @@ public class Questions_Activity extends AppCompatActivity {
                 RadioButton answerButton = new RadioButton(this);
                 answerButton.setId(answer.first);
                 answerButton.setText(answer.second);
+                answerButton.setTextColor(ColorStateList.valueOf(Color.WHITE));
+                answerButton.setButtonTintList(ColorStateList.valueOf(Color.WHITE));
                 answerGroup.addView(answerButton, params);
             }
             questions.addView(currentQuestion);
