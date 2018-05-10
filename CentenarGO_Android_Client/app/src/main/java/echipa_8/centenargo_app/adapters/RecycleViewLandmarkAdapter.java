@@ -7,8 +7,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.bumptech.glide.load.model.ImageVideoWrapperEncoder;
 
 import java.lang.ref.WeakReference;
 
@@ -24,10 +27,12 @@ public class RecycleViewLandmarkAdapter extends RecyclerView.Adapter<RecycleView
     private Pair<String[], int[]> mIdentifiers;
     private Integer mRouteId;
     private WeakReference<Context> mContext;
+    private Boolean mRouteCompleted;
 
-    public RecycleViewLandmarkAdapter(Context context, Pair<String[], int[]> identifiers, Integer routeId) {
+    public RecycleViewLandmarkAdapter(Context context, Pair<String[], int[]> identifiers, Integer routeId, Boolean completed) {
         mIdentifiers = identifiers;
         mRouteId = routeId;
+        mRouteCompleted = completed;
         mContext = new WeakReference<>(context);
     }
 
@@ -35,10 +40,13 @@ public class RecycleViewLandmarkAdapter extends RecyclerView.Adapter<RecycleView
 
         public TextView mTextView;
         public LinearLayout mLinearLayout;
+        public ImageView mImageView;
+
         public LandmarkViewHolder(View view) {
             super(view);
             mTextView = view.findViewById(R.id.list_item_template_title);
             mLinearLayout = view.findViewById(R.id.linear_layout_list);
+            mImageView = itemView.findViewById(R.id.list_item_icon);
         }
     }
 
@@ -51,6 +59,8 @@ public class RecycleViewLandmarkAdapter extends RecyclerView.Adapter<RecycleView
     @Override
     public void onBindViewHolder(RecycleViewLandmarkAdapter.LandmarkViewHolder holder, final int position) {
         holder.mTextView.setText(mIdentifiers.first[position]);
+        holder.mImageView.setBackground(mContext.get().getDrawable(mRouteCompleted
+                ? R.mipmap.color_check : position == 0 ? R.mipmap.color_running : R.mipmap.color_check));
         holder.mLinearLayout.setOnClickListener(view -> {
             Intent intent = new Intent(mContext.get().getApplicationContext(), Landmark_Activity.class);
             intent.putExtra(mContext.get().getString(R.string.landmark_id_key), mIdentifiers.second[position]);

@@ -24,11 +24,15 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import echipa_8.centenargo_app.R;
 import echipa_8.centenargo_app.adapters.RecyclerViewRouteAdapter;
 import echipa_8.centenargo_app.services.ChangeRoute_Service;
 import echipa_8.centenargo_app.services.Routes_Service;
 import echipa_8.centenargo_app.utilities.MapUtility;
+import echipa_8.centenargo_app.utilities.RouteInfo;
 import echipa_8.centenargo_app.utilities.SharedPreferencesUtility;
 
 public class Routes_Activity extends AppCompatActivity implements OnMapReadyCallback {
@@ -64,6 +68,7 @@ public class Routes_Activity extends AppCompatActivity implements OnMapReadyCall
                 case R.id.menu_routes:
                     intent = new Intent(this.getApplicationContext(), Routes_Activity.class);
                     this.startActivity(intent);
+                    finish();
                     return true;
 
                 case R.id.menu_sign_off:
@@ -115,11 +120,11 @@ public class Routes_Activity extends AppCompatActivity implements OnMapReadyCall
     public void setRoutes(String response) {
 
         dataset = response.split("\\r?\\n");
-        Pair<String[], int[]> identifiers = getNamesAndIdsFromDataset(dataset);
+        List<RouteInfo> routesInfo = getNamesAndIdsFromDataset(dataset);
         RecyclerView routesView = findViewById(R.id.recyclerView_routes);
         RecyclerView.LayoutManager routesLayoutManager = new LinearLayoutManager(this);
         routesView.setLayoutManager(routesLayoutManager);
-        RecyclerView.Adapter routesAdapter = new RecyclerViewRouteAdapter(this, identifiers);
+        RecyclerView.Adapter routesAdapter = new RecyclerViewRouteAdapter(this, routesInfo);
         routesView.setAdapter(routesAdapter);
 
         if (MapUtility.getLocationPermission(this))
@@ -154,13 +159,17 @@ public class Routes_Activity extends AppCompatActivity implements OnMapReadyCall
         }
     }
 
-    private Pair<String[], int[]> getNamesAndIdsFromDataset(String[] dataset) {
-        Pair<String[], int[]> identifiers = new Pair<>(new String[dataset.length], new int[dataset.length]);
+    private List<RouteInfo> getNamesAndIdsFromDataset(String[] dataset) {
+        List<RouteInfo> routesInfo = new ArrayList<>();
         for (int i = 0; i < dataset.length; i++) {
-            identifiers.first[i] = dataset[i].split(",")[1];
-            identifiers.second[i] = Integer.parseInt(dataset[i].split(",")[0]);
+            String[] splitted = dataset[i].split(",");
+            String name = splitted[1];
+            int id = Integer.parseInt(splitted[0]);
+            boolean completed = splitted[4].equals("1");
+
+            routesInfo.add(new RouteInfo(name, id, completed));
         }
-        return identifiers;
+        return routesInfo;
     }
 
     @Override
@@ -184,7 +193,7 @@ public class Routes_Activity extends AppCompatActivity implements OnMapReadyCall
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case DialogInterface.BUTTON_POSITIVE:
-                                changeRoute(result);
+                                changeRoute(result, false);
                                 break;
 
                             case DialogInterface.BUTTON_NEGATIVE:
@@ -196,23 +205,26 @@ public class Routes_Activity extends AppCompatActivity implements OnMapReadyCall
                 builder.setMessage("Daca vei shimba ruta, progresul de la ruta curenta va fi sters. Esti sigur ca doresti asta?").setPositiveButton("Da", dialogClickListener)
                         .setNegativeButton("Nu", dialogClickListener).show();
             } else
-                changeRoute(result);
+                changeRoute(result, true);
         }
         else {
             Intent intent = new Intent(this.getApplicationContext(), Route_Activity.class);
             intent.putExtra(getString(R.string.route_id_key), Integer.parseInt(result));
+            intent.putExtra("Completed", true);
             this.startActivity(intent);
         }
     }
 
-    private void changeRoute(String result) {
+    private void changeRoute(String result, boolean completed) {
         ChangeRoute_Service changeRoute_service = new ChangeRoute_Service(this);
-        changeRoute_service.execute(result);
+        changeRoute_service.execute(result, Boolean.toString(completed));
     }
 
     public void changeRouteIntent(String result) {
         Intent intent = new Intent(this.getApplicationContext(), Route_Activity.class);
-        intent.putExtra(getString(R.string.route_id_key), Integer.parseInt(result));
+        String[] splitted = result.split(",");
+        intent.putExtra(getString(R.string.route_id_key), Integer.parseInt(splitted[0]));
+        intent.putExtra("Completed", Boolean.parseBoolean(splitted[1]));
         this.startActivity(intent);
     }
 }
