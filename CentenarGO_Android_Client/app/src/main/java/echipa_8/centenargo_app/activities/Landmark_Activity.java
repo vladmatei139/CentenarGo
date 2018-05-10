@@ -216,6 +216,10 @@ public class Landmark_Activity extends AppCompatActivity {
 
         CharSequence oldDescription = mLandmarkDescription.getText();
 
+        if(oldDescription.equals(content)){
+            return;
+        }
+
         final int[] i = new int[1];
         i[0] = oldDescription.length();
         final int length = content.length();
@@ -266,4 +270,5 @@ public class Landmark_Activity extends AppCompatActivity {
             landmarkContent_service.execute(mLandmarkId.toString());
         }
     }
+
 }

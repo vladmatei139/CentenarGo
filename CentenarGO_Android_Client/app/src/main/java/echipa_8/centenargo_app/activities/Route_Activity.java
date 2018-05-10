@@ -70,20 +70,17 @@ public class Route_Activity extends AppCompatActivity implements OnMapReadyCallb
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-<<<<<<< HEAD
 
         if(mToggle.onOptionsItemSelected(item)){
-            return true;
-=======
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                Intent intent = new Intent(getApplicationContext(), Gallery_Activity.class);
-                startActivity(intent);
-                return true;
-            default:
-                Toast.makeText(getApplicationContext(), "Unknown command", Toast.LENGTH_LONG).show();
-                return true;
->>>>>>> 2439c3475512d04437f97e2399f3bedde85f4aa6
+            switch (item.getItemId()) {
+                case R.id.action_settings:
+                    Intent intent = new Intent(getApplicationContext(), Gallery_Activity.class);
+                    startActivity(intent);
+                    return true;
+                default:
+                    Toast.makeText(getApplicationContext(), "Unknown command", Toast.LENGTH_LONG).show();
+                    return true;
+            }
         }
         return super.onOptionsItemSelected(item);
     }
